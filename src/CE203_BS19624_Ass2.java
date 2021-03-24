@@ -269,7 +269,6 @@ public class CE203_BS19624_Ass2 extends JFrame {
         long estimatedTime;
         boolean paused;
 
-
         private int direction = -1; //the initial direction of the covid enemies
         private int direction2 = 2;
         private int direction3 = 3;
@@ -277,9 +276,6 @@ public class CE203_BS19624_Ass2 extends JFrame {
         int Life = 2; //the amount of life the player has depending on how many masks they have picked up (Max will be 3)
         BufferedImage img;
         Variables Variables = new Variables();
-        int playerX1 = player.getX();
-        int playerY1 = player.getY();
-        Rectangle p = new Rectangle(playerX1 - 25, playerY1 + 10, Variables.PlayerWidth, Variables.PlayerHeight);
 
 
         private boolean inGame = true;
@@ -627,8 +623,9 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
 
             long TimeElapsed = estimatedTime;
-
-
+            int playerX1 = player.getX();
+            int playerY1 = player.getY();
+            Rectangle p = new Rectangle(playerX1 - 25, playerY1 + 10, Variables.PlayerWidth, Variables.PlayerHeight);
             if (deaths == Variables.AmountOfCovidToKill) {
 
                 if (CE203_BS19624_Ass2.Variables.Choice.equals("hard") || CE203_BS19624_Ass2.Variables.Choice.equals("Hard")) {
@@ -723,12 +720,16 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
                             } else { //the player looses a life if they have more than 1 life
                                 Life = Life - 1;
+
+
                             }
                         }
                     }
                 }
                 for (Alien AlienActors : aliens) { //same as above but for the ukcovid enemies
 
+                    int AlienActorsX = AlienActors.getX();
+                    int AlienActorsY = AlienActors.getY();
                     Rectangle a2 = new Rectangle(AlienActors.getX(), AlienActors.getY(), 40, Variables.AsteroidHeight);
                     shapeList.add(a2);
 
@@ -766,6 +767,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
                             } else {
                                 BossActors.setHealth(BossActors.getHealth() - 1);
                                 dispense.die();
+
                             }
                         }
                     }
@@ -969,6 +971,12 @@ public class CE203_BS19624_Ass2 extends JFrame {
                     germ2.setX(ukcovid.getX());
                     germ2.setY(ukcovid.getY());
                 }
+
+                int germX = germ2.getX();
+                int germY = germ2.getY();
+                int playerX = player.getX();
+                int playerY = player.getY();
+
                 if (player.isVisible() && !germ2.isDestroyed()) {
 
                     if (g.intersects(p)) {
