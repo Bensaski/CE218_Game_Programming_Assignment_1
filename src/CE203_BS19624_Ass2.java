@@ -11,6 +11,9 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Random;
+
+import java.util.TimerTask;
+import java.util.concurrent.Delayed;
 import java.util.stream.Collectors;
 
 /*Part of this code has been learnt from tutorials online.
@@ -203,7 +206,8 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
     public class Dispense extends Sprite { //This class is for when the player shoots the projectile by pressing spacebar
 
-
+        private int height;
+        private int width;
         public Dispense() {
         }
 
@@ -218,13 +222,19 @@ public class CE203_BS19624_Ass2 extends JFrame {
             var ii = new ImageIcon(shotImg);
             setImage(ii.getImage());
 
+            width = ii.getImage().getWidth(null);
+            System.out.println(width);
+            height = ii.getImage().getHeight(null);
+            System.out.println(height);
+            setImage(ii.getImage());
+
             int H_SPACE = 25; //these two small blocks of code determine where the water projectile initially spawns in comparison to the player coordinates
             setX(x + H_SPACE);
 
             int V_SPACE = 10;
             setY(y - V_SPACE);
 
-            Rectangle l = new Rectangle(x + 25, y + 10, 30, 30);
+            Rectangle l = new Rectangle(x + 25, y + 10, 17, 33);
 
             Music Music = new Music(); //call the music method
 
@@ -250,12 +260,15 @@ public class CE203_BS19624_Ass2 extends JFrame {
         private java.util.List<Alien> aliens; //the list of uk covid enemies
         private java.util.List<Boss> bosses; //the list of uk covid enemies
         private java.util.List<Dispense>dispenses;
+        java.util.List<Shape> dispenseList = new ArrayList<>();
+        java.util.List<Shape> shapeList = new ArrayList<Shape>();
         private Player player;
         private Dispense dispense;
         long PausedTotal;
         long pauseTime;
         long estimatedTime;
         boolean paused;
+
 
         private int direction = -1; //the initial direction of the covid enemies
         private int direction2 = 2;
@@ -264,6 +277,9 @@ public class CE203_BS19624_Ass2 extends JFrame {
         int Life = 2; //the amount of life the player has depending on how many masks they have picked up (Max will be 3)
         BufferedImage img;
         Variables Variables = new Variables();
+        int playerX1 = player.getX();
+        int playerY1 = player.getY();
+        Rectangle p = new Rectangle(playerX1 - 25, playerY1 + 10, Variables.PlayerWidth, Variables.PlayerHeight);
 
 
         private boolean inGame = true;
@@ -293,6 +309,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
         }
 
         private void ExpertLevel() {
+            ex.dispose();
             remove(ex);
             Variables var = new Variables();
             var.Choice = "expert";
@@ -303,6 +320,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
         }
 
         private void EndlessLevel() {
+            ex.dispose();
             remove(ex);
             Variables var = new Variables();
             var.Choice = "endless";
@@ -607,10 +625,10 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
         private void update() { //this body of code runs throughout the game
 
+
             long TimeElapsed = estimatedTime;
-            int playerX1 = player.getX();
-            int playerY1 = player.getY();
-            Rectangle p = new Rectangle(playerX1 - 25, playerY1 + 10, Variables.PlayerWidth, Variables.PlayerHeight);
+
+
             if (deaths == Variables.AmountOfCovidToKill) {
 
                 if (CE203_BS19624_Ass2.Variables.Choice.equals("hard") || CE203_BS19624_Ass2.Variables.Choice.equals("Hard")) {
@@ -656,7 +674,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
             // shot
 
             // if (dispense.isVisible()) { //checks whether a shot is already on the screen
-            java.util.List<Shape> dispenseList = new ArrayList<>();
+
             for(Dispense dispense : dispenses) {
                 Rectangle d = new Rectangle(dispense.getX(), dispense.getY(), 30, 40);
                  dispenseList.add(d);
@@ -664,12 +682,13 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 int shotY = dispense.getY();
 
 
-                java.util.List<Shape> shapeList = new ArrayList<Shape>();
+
 
                 for (Asteroid AsteroidActors : asteroids) {
 
                     Rectangle a = new Rectangle(AsteroidActors.getX(), AsteroidActors.getY(), 20, Variables.AsteroidHeight);
                     shapeList.add(a);
+
 
 
                     int AsteroidActorX = AsteroidActors.getX();
@@ -704,16 +723,12 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
                             } else { //the player looses a life if they have more than 1 life
                                 Life = Life - 1;
-
-
                             }
                         }
                     }
                 }
                 for (Alien AlienActors : aliens) { //same as above but for the ukcovid enemies
 
-                    int AlienActorsX = AlienActors.getX();
-                    int AlienActorsY = AlienActors.getY();
                     Rectangle a2 = new Rectangle(AlienActors.getX(), AlienActors.getY(), 40, Variables.AsteroidHeight);
                     shapeList.add(a2);
 
@@ -751,7 +766,6 @@ public class CE203_BS19624_Ass2 extends JFrame {
                             } else {
                                 BossActors.setHealth(BossActors.getHealth() - 1);
                                 dispense.die();
-                                System.out.println(BossActors.getHealth());
                             }
                         }
                     }
@@ -955,12 +969,6 @@ public class CE203_BS19624_Ass2 extends JFrame {
                     germ2.setX(ukcovid.getX());
                     germ2.setY(ukcovid.getY());
                 }
-
-                int germX = germ2.getX();
-                int germY = germ2.getY();
-                int playerX = player.getX();
-                int playerY = player.getY();
-
                 if (player.isVisible() && !germ2.isDestroyed()) {
 
                     if (g.intersects(p)) {
@@ -1193,6 +1201,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
             repaint();
         }
 
+
         private class GameCycle implements ActionListener {
 
             @Override
@@ -1203,6 +1212,18 @@ public class CE203_BS19624_Ass2 extends JFrame {
         }
 
         private class TAdapter extends KeyAdapter {
+             void disable(final AbstractButton b, final long ms) {
+                b.setEnabled(false);
+                new SwingWorker() {
+                    @Override protected Object doInBackground() throws Exception {
+                        Thread.sleep(ms);
+                        return null;
+                    }
+                    @Override protected void done() {
+                        b.setEnabled(true);
+                    }
+                }.execute();
+            }
 
 
             @Override
@@ -1210,6 +1231,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
                 player.keyReleased(e);
             }
+            boolean fired = false;
 
             @Override
             public void keyPressed(KeyEvent e) { //for shooting the dispense projectile on spacebar press
@@ -1226,15 +1248,38 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
                 if (key == KeyEvent.VK_SPACE ) { //when spacebar is pressed, if the game is running and a dispense projectile isnt on the screen, shoot the projectile. You can only have one dispense projectile on the screen at a time
 
-                    if (inGame) {
 
-                        if (Life == 3) {
+
+                    if (inGame && !fired) {
+                        new Thread(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                fired = true;
+
+                                try {
+                                    Thread.sleep(250);
+                                } catch (InterruptedException interruptedException) {
+                                    interruptedException.printStackTrace();
+                                }
+
+                                fired = false;
+                            }
+                        }).start();
+                    }
+
+
+
+                        if (Life == 3 && !fired) {
                             dispense = new Dispense(x, y);
                             dispenses.add(dispense);
-                            dispense = new Dispense(x + 60, y);
+                            dispense = new Dispense(x + 60, y+50);
                             dispenses.add(dispense);
 
-                        } else {
+
+
+                        } else if(!fired) {
 
                             // if (!dispense.isVisible()) {
 
@@ -1243,7 +1288,11 @@ public class CE203_BS19624_Ass2 extends JFrame {
                             dispenses.add(dispense);
                             // }
                         }
-                    }
+
+
+
+
+
                 }
                 if (key2 == KeyEvent.VK_ESCAPE) { //If the escape key is pressed, the game pauses. The time paused is taken away from the elapsed time so that the timer isnt continuing running against the players time affecting their score
 
