@@ -7,13 +7,10 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Random;
 
-import java.util.TimerTask;
-import java.util.concurrent.Delayed;
 import java.util.stream.Collectors;
 
 /*Part of this code has been learnt from tutorials online.
@@ -218,7 +215,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
         private void initDispense(int x, int y) {
 
-            var shotImg = "src/Images/water.png"; //setting the image for the water projectile
+            var shotImg = "src/Images/Bullet.png"; //setting the image for the water projectile
             var ii = new ImageIcon(shotImg);
             setImage(ii.getImage());
 
@@ -234,7 +231,6 @@ public class CE203_BS19624_Ass2 extends JFrame {
             int V_SPACE = 10;
             setY(y - V_SPACE);
 
-            Rectangle l = new Rectangle(x + 25, y + 10, 17, 33);
 
             Music Music = new Music(); //call the music method
 
@@ -247,6 +243,14 @@ public class CE203_BS19624_Ass2 extends JFrame {
                             e.printStackTrace();
                         }
                     }).start();
+        }
+
+        public int getHeight(){
+            return height;
+        }
+
+        public int getWidth(){
+            return width;
         }
     }
 
@@ -268,12 +272,14 @@ public class CE203_BS19624_Ass2 extends JFrame {
         long pauseTime;
         long estimatedTime;
         boolean paused;
+        long TimeElapsed = estimatedTime;
 
-        private int direction = -1; //the initial direction of the covid enemies
+        private int direction = -4; //the initial direction of the covid enemies
         private int direction2 = 2;
         private int direction3 = 3;
         private int deaths = 0;
-        int Life = 2; //the amount of life the player has depending on how many masks they have picked up (Max will be 3)
+        int Life = 4; //the amount of life the player has depending on how many masks they have picked up (Max will be 3)
+        int Projectiles = 1;
         BufferedImage img;
         Variables Variables = new Variables();
 
@@ -622,7 +628,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
         private void update() { //this body of code runs throughout the game
 
 
-            long TimeElapsed = estimatedTime;
+
             int playerX1 = player.getX();
             int playerY1 = player.getY();
             Rectangle p = new Rectangle(playerX1 - 25, playerY1 + 10, Variables.PlayerWidth, Variables.PlayerHeight);
@@ -642,27 +648,11 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 timer.stop();
                 message = "Game won! The Vaccine has been distributed across the population whilst you were fighting off the Covid Invasion";
                 JOptionPane.showMessageDialog(null, "It took you " + TimeElapsed + " Seconds to destroy the Covid Invasion!"); ///This body of cody is ran when the player kills the covid invasion and wins the game, It will output the time it took for them to win and write it to the text file for the correct difficulty
+                HighScore2();
+
+        }
 
 
-                //Writing highscores to the relevant files with the WriteFile method declared above
-                if (Variables.Choice.equals("Easy") || Variables.Choice.equals("easy")) {
-                    String FilePath = "src/HighScoreEasy.txt";
-                    WriteFile(FilePath, TimeElapsed);
-                }
-
-                if (Variables.Choice.equals("Hard") || Variables.Choice.equals("hard")) {
-                    String FilePath = "src/HighScoreHard.txt";
-                    WriteFile(FilePath, TimeElapsed);
-                }
-            }
-            if (Variables.Choice.equals("Expert") || Variables.Choice.equals("expert")) {
-                String FilePath = "src/HighScoreExpert.txt";
-                WriteFile(FilePath, TimeElapsed);
-            }
-            if (Variables.Choice.equals("Endless") || Variables.Choice.equals("endless")) {
-                String FilePath = "src/HighScoreEndless.txt";
-                WriteFile(FilePath, TimeElapsed);
-            }
 
 
             // player
@@ -673,7 +663,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
             // if (dispense.isVisible()) { //checks whether a shot is already on the screen
 
             for(Dispense dispense : dispenses) {
-                Rectangle d = new Rectangle(dispense.getX(), dispense.getY(), 30, 40);
+                Rectangle d = new Rectangle(dispense.getX()-30, dispense.getY(), dispense.getWidth()+20, dispense.getHeight());
                  dispenseList.add(d);
                 int shotX = dispense.getX();
                 int shotY = dispense.getY();
@@ -684,8 +674,6 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 for (Asteroid AsteroidActors : asteroids) {
 
                     Rectangle a = new Rectangle(AsteroidActors.getX(), AsteroidActors.getY(), 20, Variables.AsteroidHeight);
-                    shapeList.add(a);
-
 
 
                     int AsteroidActorX = AsteroidActors.getX();
@@ -699,7 +687,6 @@ public class CE203_BS19624_Ass2 extends JFrame {
                             AsteroidActors.setImage(ii.getImage());
                             AsteroidActors.setDying(true);
                             dispense.die();
-                            shapeList.remove(a);
                             deaths++; // increases death counter which is checked again
                             // nst the CovidAmountToKill variable and when they are the same the game is won.
                             //remove dispense projectile
@@ -763,12 +750,11 @@ public class CE203_BS19624_Ass2 extends JFrame {
                                 BossActors.setImage(ii.getImage());
                                 BossActors.setDying(true);
                                 deaths++;
-                                dispense.die();
                             } else {
                                 BossActors.setHealth(BossActors.getHealth() - 1);
-                                dispense.die();
 
                             }
+                            dispense.die();
                         }
                     }
                 }
@@ -781,7 +767,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
                         if (Life < 3) { //if life is less than 3, set the dispenser to the default speed
                             y -= 5; //the speed of the dispenser shot
                         }
-                        if (Life == 3) { //if life is 3 then increase dispenser speed
+                        if (Life >= 3) { //if life is 3 then increase dispenser speed
                             y -= 10; //the speed of the dispenser shot
                         }
 
@@ -945,7 +931,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
                 if (!germ.isDestroyed()) {
 
-                    germ.setY(germ.getY() + 1);
+                    germ.setY(germ.getY() + 5);
 
                     if (germ.getY() >= Variables.FloorLevel - Variables.GermHeight - 10) { //if the germ  gets to just above the floor level, destroy it
 
@@ -1082,9 +1068,8 @@ public class CE203_BS19624_Ass2 extends JFrame {
                             && maskY <= (playerY + Variables.PlayerHeight + 20)) {
                         BatteryPack.setDestroyed2(true);
                         Music Music = new Music(); //call the music method
-                        if (Life <= 2) {
-                            Life = Life + 1;
-                            System.out.println(Life);
+                        if (Projectiles <= 3) {
+                            Projectiles = Projectiles + 1;
 
 
                             //We run this play sound method in a new thread otherwise the game would pause until the sound has been played, which we dont want
@@ -1126,7 +1111,32 @@ public class CE203_BS19624_Ass2 extends JFrame {
             }
         }
 
+        public void HighScore2(){
+            //Writing highscores to the relevant files with the WriteFile method declared above
+            if (Variables.Choice.equals("Easy") || Variables.Choice.equals("easy")) {
+                String FilePath = "src/HighScoreEasy.txt";
+                WriteFile(FilePath, TimeElapsed);
+            }
+
+            if (Variables.Choice.equals("Hard") || Variables.Choice.equals("hard")) {
+                String FilePath = "src/HighScoreHard.txt";
+                WriteFile(FilePath, TimeElapsed);
+            }
+
+            if (Variables.Choice.equals("Expert") || Variables.Choice.equals("expert")) {
+                String FilePath = "src/HighScoreExpert.txt";
+                WriteFile(FilePath, TimeElapsed);
+            }
+            if (Variables.Choice.equals("Endless") || Variables.Choice.equals("endless")) {
+                String FilePath = "src/HighScoreEndless.txt";
+                WriteFile(FilePath, TimeElapsed);
+            }
+
+        }
+
         public void HighScore() throws IOException { //This method shows the highscore box
+
+
             String input = "";
             int i = 0;
             int i2 = 0;
@@ -1267,7 +1277,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
                                 fired = true;
 
                                 try {
-                                    Thread.sleep(250);
+                                    Thread.sleep(100);
                                 } catch (InterruptedException interruptedException) {
                                     interruptedException.printStackTrace();
                                 }
@@ -1279,7 +1289,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
 
 
-                        if (Life == 3 && !fired) {
+                        if (Projectiles== 3 && !fired) {
                             dispense = new Dispense(x, y);
                             dispenses.add(dispense);
                             dispense = new Dispense(x + 60, y+50);
@@ -1287,7 +1297,17 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
 
 
-                        } else if(!fired) {
+                        } else if (Projectiles == 4 && !fired) {
+                        dispense = new Dispense(x, y);
+                        dispenses.add(dispense);
+                        dispense = new Dispense(x + 60, y+50);
+                        dispenses.add(dispense);
+                        dispense = new Dispense(x - 60, y+50);
+                        dispenses.add(dispense);
+
+
+
+                    }else if(!fired) {
 
                             // if (!dispense.isVisible()) {
 
@@ -1913,7 +1933,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 Variables.UKCovidHeight = 50;
                 Variables.UKCovidWidth = 40;
 
-                Variables.GoDown = 50;
+                Variables.GoDown = 20;
                 Variables.GoDown2 = 30;
                 Variables.AmountOfCovidToKill = 40;
                 Variables.Chance = 1;
@@ -1988,38 +2008,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 Variables.BossRow = 1;
                 Variables.BossColumn = 1;
                 Variables.chosen = true;
-            } else if (Choice.equals("Boss") || Choice.equals("boss")) {
-                Variables.BoardHeight = 1000;
-                Variables.BoardWidth = 1000;
-                Variables.BorderLeft = 5;
-                Variables.BorderRight = 30;
 
-                Variables.FloorLevel = 900;
-                Variables.GermHeight = 30;
-                Variables.MaskHeight = 40;
-                Variables.AsteroidHeight = 51;
-                Variables.AsteroidWidth = 64;
-                Variables.CovidInitX = 150;
-                Variables.CovidInitY = 60;
-                Variables.UKCovidInitX = 150;
-                Variables.UKCovidInitY = 5;
-                Variables.UKCovidHeight = 50;
-                Variables.UKCovidWidth = 40;
-
-                Variables.GoDown = 50;
-                Variables.GoDown2 = 30;
-                Variables.AmountOfCovidToKill = 1;
-                Variables.Chance = 1;
-                Variables.Delay = 10;
-                Variables.PlayerWidth = 50;
-                Variables.PlayerHeight = 80;
-                Variables.CovidRow = 0;
-                Variables.CovidColumn = 0;
-                Variables.UKCovidRow = 0;
-                Variables.UKCovidColumn = 0;
-                Variables.BossRow = 1;
-                Variables.BossColumn = 1;
-                Variables.chosen = true;
             } else if (Choice.equals("Endless") || Choice.equals("endless")) {
                 Variables.BoardHeight = 1000;
                 Variables.BoardWidth = 1000;
