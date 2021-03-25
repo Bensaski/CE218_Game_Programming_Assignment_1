@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Random;
 
+import java.util.TimerTask;
 import java.util.stream.Collectors;
 
 /*Part of this code has been learnt from tutorials online.
@@ -44,7 +45,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
         add(new GameLogic()); //adds the map to the screen
 
         setTitle("Covid Invasion - Ben Sadler BS19624");
-        setSize(Variables.BoardWidth, Variables.BoardHeight); //sets the size of the map to the boardwidth and boardheight variable in the variables class
+        setSize(Variables.BoardWidth, Variables.BoardHeight); //sts the size of the map to the boardwidth and boardheight variable in the variables class
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false); //we dont want the window to be resizable as that will affect the difficulty of the game. A wider screen would mean the covid enemies will take longer to invade, which will affect high scores.
@@ -58,18 +59,8 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
 
         //This message dialog shows the aim of the game and the rules. At the bottom is a link to the gov.uk website for coronavirus advice and guidelines.
-        JOptionPane.showMessageDialog(null, "COVID-19 has infested various regions in the world and it is your job to keep it at bay" +
-                "\nBy using your flashy soap dispensing gun, blast away the virus. Prevent it from coming within two meters of you or you will be infected too!" +
-                "\n Masks can occasionally spawn that can prevent the virus from entering your lungs. If a virus comes in contact with it, the mask will be taken away and prevents you from getting infected." +
-                "\n \nRules : \n" +
-                "1. Press SPACEBAR to shoot your Soap Dispensing Gun" +
-                "\n2. Press Left and Right Arrow Keys to move Left and Right" +
-                "\n Use Esc or Left Mouse Button to pause and unpause the game" +
-                "\n3. Destroy all Covid Viruses to win the game before they reach the floor level, or you will lose the game" +
-                "\n4. Avoid the Blue germs or they will take a life away. If you run out of lives and get hit again, you will lose the game" +
-                "\n5. Pick up the White Masks to gain a Life up to 3 Maximum Lives, once at 3 Masks/Lives, you gain courage against the virus and your soap dispensing gun will now shoot faster." +
-                "\n\n Coronavirus is a REAL threat in our daily lives and should be taken seriously, practice social distancing like in the game and make sure to wash your hands often. For more information against the virus, please check out the following link :\nhttps://www.gov.uk/coronavirus");
-
+        JOptionPane.showMessageDialog(null, "Aliens have come to invade earth!\n With their new gravity harness weapons, they have redirected the nearest asteroid belt towards earth, sending asteroids our way." +
+                "\nYour job is to destroy the asteroids and aliens to save humanity!aa ");
         String Difficulty = JOptionPane.showInputDialog("Which Difficulty would you like? Easy,Hard or Endless"); //gets the chosen difficulty for
         var.Choice = Difficulty;
         String name = JOptionPane.showInputDialog("Please enter Player Name");
@@ -238,7 +229,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
             new Thread(
                     () -> {
                         try {
-                            Music.playSound("src/Laser.wav"); // This plays the shooting sound for the gun when the player presses space bar
+                            Music.playSound("src/Projectile.wav"); // This plays the shooting sound for the gun when the player presses space bar
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -531,15 +522,15 @@ public class CE203_BS19624_Ass2 extends JFrame {
         private void doDrawing(Graphics g) { //Does the drawing for all the bodys of code that are called here.
 
 
-            g.setColor(Color.black);
+            g.setColor(Color.white);
             //g.fillRect(0, 0, d.width, d.height);
-            g.setColor(Color.black);
-            g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
-            g.drawString("Life : " + Life, 100, 950);
+            g.setColor(Color.white);
+            g.setFont(new Font("Arial", Font.PLAIN, 30));
+            g.drawString("Life : " + Life, 50, 50);
             estimatedTime = (System.currentTimeMillis() - start - PausedTotal) / 1000;
             //estimatedTime = estimatedTime - PausedTotal;
             String elapsed = String.valueOf(estimatedTime);
-            g.drawString("Time Elapsed : " + elapsed + " s", 750, 950);
+            g.drawString("Time Elapsed : " + elapsed + " s", 700, 50);
 
 
             if (inGame) {
@@ -624,6 +615,133 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
         }
 
+        class DispenseMoveUp extends Thread{
+            public void run(){
+                for (Dispense dispense : dispenses){
+                    int y = dispense.getY();
+                    if (Life < 3) { //if life is less than 3, set the dispenser to the default speed
+                        y -= 5; //the speed of the dispenser shot
+                    }
+                    if (Life >= 3) { //if life is 3 then increase dispenser speed
+                        y -= 10; //the speed of the dispenser shot
+                    }
+
+                    if (y < 0) {
+                        dispense.die();
+                    } else {
+                        dispense.setY(y);
+                    }
+                }
+            }
+        }
+
+
+        // }
+        class AsteroidMoveDown extends Thread { //the class for the covid variable moving down
+            @Override
+            public void run() {
+                for (Asteroid asteroid : asteroids) { //changing directions when the asteroid enemies hit the edge
+                    int x = asteroid.getX();
+                    if (x >= Variables.BoardWidth - Variables.BorderRight && direction != -1) {
+                        direction = -1;
+                        for (Asteroid a2 : asteroids) {
+                            a2.setY(a2.getY() + Variables.GoDown);
+                        }
+                    }
+                    if (x <= Variables.BorderLeft && direction != 1) {
+                        direction = 1;
+                        for (Asteroid a : asteroids) {
+                            a.setY(a.getY() + Variables.GoDown);
+                        }
+                    }
+                }
+                for (Asteroid asteroid : asteroids) {
+                    if (asteroid.isVisible()) {
+                        int y = asteroid.getY();
+                        if (y > Variables.FloorLevel - Variables.AsteroidHeight) { //if the covid enemy reaches the floor level, then the game is lost and covid has invaded
+                            inGame = false;
+                            message = "Invasion!";
+                        }
+                        asteroid.act(direction);
+                    }
+                }
+            }
+        }
+
+        class BossMoveDown extends Thread { //the class for the covid variable moving down
+            @Override
+            public void run() {
+                for (Boss boss : bosses) { //changing directions when the asteroid enemies hit the edge
+                    int x = boss.getX();
+                    if (x >= Variables.BoardWidth - Variables.BorderRight && direction3 != -3) {
+                        direction3 = -3;
+                        for (Boss b2 : bosses) {
+                            b2.setY(b2.getY() + Variables.GoDown);
+                        }
+                    }
+                    if (x <= Variables.BorderLeft && direction3 != 3) {
+                        direction3 = 3;
+                        for (Boss b : bosses) {
+                            b.setY(b.getY() + Variables.GoDown);
+                        }
+                    }
+                }
+                for (Boss boss : bosses) {
+                    if (boss.isVisible()) {
+                        int y = boss.getY();
+                        if (y > Variables.FloorLevel - Variables.AsteroidHeight) { //if the covid enemy reaches the floor level, then the game is lost and covid has invaded
+                            inGame = false;
+                            message = "Invasion!";
+                        }
+                        boss.BossAct(direction3);
+                    }
+                }
+            }
+        }
+
+
+        class UkCovidMoveDown extends Thread { //same as above but for the uk covid
+            @Override
+            public void run() {
+
+                for (Alien ukcovid : aliens) {
+
+                    int x2 = ukcovid.getX();
+                    if (x2 >= Variables.BoardWidth - Variables.BorderRight && direction2 != -2) {
+                        direction2 = -2;
+                        for (Alien a2 : aliens) {
+
+
+                            a2.setY(a2.getY() + Variables.GoDown2);
+                        }
+                    }
+                    if (x2 <= Variables.BorderLeft && direction2 != 2) {
+                        direction2 = 2;
+                        for (Alien a2 : aliens) {
+
+                            a2.setY(a2.getY() + Variables.GoDown2);
+
+                        }
+                    }
+                }
+                for (Alien ukcovid : aliens) {
+                    if (ukcovid.isVisible()) {
+                        int y = ukcovid.getY();
+                        if (y > Variables.FloorLevel - Variables.UKCovidHeight) {
+                            inGame = false;
+                            message = "Invasion!";
+                        }
+                        ukcovid.UKAct(direction2);
+                    }
+                }
+            }
+        }
+
+        AsteroidMoveDown threadA = new AsteroidMoveDown();
+        UkCovidMoveDown threadB = new UkCovidMoveDown();
+        DispenseMoveUp threadD = new DispenseMoveUp();
+        BossMoveDown threadC = new BossMoveDown();
+
 
         private void update() { //this body of code runs throughout the game
 
@@ -662,11 +780,14 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
             // if (dispense.isVisible()) { //checks whether a shot is already on the screen
 
+            boolean takelife = false;
             for(Dispense dispense : dispenses) {
-                Rectangle d = new Rectangle(dispense.getX()-30, dispense.getY(), dispense.getWidth()+20, dispense.getHeight());
-                 dispenseList.add(d);
+                Rectangle d = new Rectangle(dispense.getX() - 30, dispense.getY(), dispense.getWidth() + 20, dispense.getHeight());
+                dispenseList.add(d);
                 int shotX = dispense.getX();
                 int shotY = dispense.getY();
+
+
 
 
 
@@ -684,6 +805,15 @@ public class CE203_BS19624_Ass2 extends JFrame {
                         if (d.intersects(a)) {
 
                             var ii = new ImageIcon(explImg); //shows an explosion image when the covid actor gets hit and dies
+                            Music Music = new Music(); //call the music method
+                            new Thread(
+                                    () -> {
+                                        try {
+                                            Music.playSound("src/Hit.wav"); // This plays the shooting sound for picking up the masks
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }).start();
                             AsteroidActors.setImage(ii.getImage());
                             AsteroidActors.setDying(true);
                             dispense.die();
@@ -695,7 +825,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
                         }
 
                     }
-                    if (player.isVisible()) {
+                    if (player.isVisible() && AsteroidActors.isVisible() && takelife == false) {
 
                         // this will trigger a life loss if the player comes in contact with the asteroid
                         if (p.intersects(a) && AsteroidActors.isVisible()) {
@@ -707,12 +837,14 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
                             } else { //the player looses a life if they have more than 1 life
                                 Life = Life - 1;
+                                takelife=true;
 
 
                             }
                         }
                     }
                 }
+
                 for (Alien AlienActors : aliens) { //same as above but for the ukcovid enemies
 
                     int AlienActorsX = AlienActors.getX();
@@ -760,187 +892,68 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 }
             }
 
-            class DispenseMoveUp extends Thread{
-                public void run(){
-                    for (Dispense dispense : dispenses){
-                        int y = dispense.getY();
-                        if (Life < 3) { //if life is less than 3, set the dispenser to the default speed
-                            y -= 5; //the speed of the dispenser shot
-                        }
-                        if (Life >= 3) { //if life is 3 then increase dispenser speed
-                            y -= 10; //the speed of the dispenser shot
-                        }
-
-                        if (y < 0) {
-                            dispense.die();
-                        } else {
-                            dispense.setY(y);
-                        }
-                    }
-                }
-            }
 
 
-            // }
-            class AsteroidMoveDown extends Thread { //the class for the covid variable moving down
-                @Override
-                public void run() {
-                    for (Asteroid asteroid : asteroids) { //changing directions when the asteroid enemies hit the edge
-                        int x = asteroid.getX();
-                        if (x >= Variables.BoardWidth - Variables.BorderRight && direction != -1) {
-                            direction = -1;
-                            for (Asteroid a2 : asteroids) {
-                                a2.setY(a2.getY() + Variables.GoDown);
-                            }
-                        }
-                        if (x <= Variables.BorderLeft && direction != 1) {
-                            direction = 1;
-                            for (Asteroid a : asteroids) {
-                                a.setY(a.getY() + Variables.GoDown);
-                            }
-                        }
-                    }
-                    for (Asteroid asteroid : asteroids) {
-                        if (asteroid.isVisible()) {
-                            int y = asteroid.getY();
-                            if (y > Variables.FloorLevel - Variables.AsteroidHeight) { //if the covid enemy reaches the floor level, then the game is lost and covid has invaded
-                                inGame = false;
-                                message = "Invasion!";
-                            }
-                            asteroid.act(direction);
-                        }
-                    }
-                }
-            }
 
-            class BossMoveDown extends Thread { //the class for the covid variable moving down
-                @Override
-                public void run() {
-                    for (Boss boss : bosses) { //changing directions when the asteroid enemies hit the edge
-                        int x = boss.getX();
-                        if (x >= Variables.BoardWidth - Variables.BorderRight && direction3 != -3) {
-                            direction3 = -3;
-                            for (Boss b2 : bosses) {
-                                b2.setY(b2.getY() + Variables.GoDown);
-                            }
-                        }
-                        if (x <= Variables.BorderLeft && direction3 != 3) {
-                            direction3 = 3;
-                            for (Boss b : bosses) {
-                                b.setY(b.getY() + Variables.GoDown);
-                            }
-                        }
-                    }
-                    for (Boss boss : bosses) {
-                        if (boss.isVisible()) {
-                            int y = boss.getY();
-                            if (y > Variables.FloorLevel - Variables.AsteroidHeight) { //if the covid enemy reaches the floor level, then the game is lost and covid has invaded
-                                inGame = false;
-                                message = "Invasion!";
-                            }
-                            boss.BossAct(direction3);
-                        }
-                    }
-                }
-            }
+            threadA.run();
 
+            threadB.run();
 
-            class UkCovidMoveDown extends Thread { //same as above but for the uk covid
-                @Override
-                public void run() {
+            threadC.run();
 
-                    for (Alien ukcovid : aliens) {
-
-                        int x2 = ukcovid.getX();
-                        if (x2 >= Variables.BoardWidth - Variables.BorderRight && direction2 != -2) {
-                            direction2 = -2;
-                            for (Alien a2 : aliens) {
-
-
-                                a2.setY(a2.getY() + Variables.GoDown2);
-                            }
-                        }
-                        if (x2 <= Variables.BorderLeft && direction2 != 2) {
-                            direction2 = 2;
-                            for (Alien a2 : aliens) {
-
-                                a2.setY(a2.getY() + Variables.GoDown2);
-
-                            }
-                        }
-                    }
-                    for (Alien ukcovid : aliens) {
-                        if (ukcovid.isVisible()) {
-                            int y = ukcovid.getY();
-                            if (y > Variables.FloorLevel - Variables.UKCovidHeight) {
-                                inGame = false;
-                                message = "Invasion!";
-                            }
-                            ukcovid.UKAct(direction2);
-                        }
-                    }
-                }
-            }
-
-
-            AsteroidMoveDown threadA = new AsteroidMoveDown();
-            threadA.start();
-            UkCovidMoveDown threadB = new UkCovidMoveDown();
-            threadB.start();
-            BossMoveDown threadC = new BossMoveDown();
-            threadC.start();
-            DispenseMoveUp threadD = new DispenseMoveUp();
-            threadD.start();
+            threadD.run();
 
             // Germ generation
             var generator = new Random(); //creates a random number generator for determining when to spawn a germ
 
             for (Asteroid asteroid : asteroids) {
 
-
-                int shot = generator.nextInt(6000);
-                Asteroid.Germ germ = asteroid.getGerm();
-                Rectangle g = new Rectangle(germ.getX(), germ.getY(), 5, 20);
-
-
-                if (shot == Variables.Chance && asteroid.isVisible() && germ.isDestroyed()) { //if the shot generator is the same as the chance variable, then spawn a germ
-
-                    germ.setDestroyed(false);
-                    germ.setX(asteroid.getX()); //spawns where the covid enemy is
-                    germ.setY(asteroid.getY());
-                }
+                if (asteroid.getY() >= 0) {
+                    int shot = generator.nextInt(6000);
+                    Asteroid.Germ germ = asteroid.getGerm();
+                    Rectangle g = new Rectangle(germ.getX(), germ.getY(), 5, 20);
 
 
-                if (player.isVisible() && !germ.isDestroyed()) {
+                    if (shot == Variables.Chance && asteroid.isVisible() && germ.isDestroyed()) { //if the shot generator is the same as the chance variable, then spawn a germ
 
-                    if (g.intersects(p)) { //checks if the germ coordinates are within the player hitbox/collision coordinates
-                        germ.setDestroyed(true);
+                        germ.setDestroyed(false);
+                        germ.setX(asteroid.getX()); //spawns where the covid enemy is
+                        germ.setY(asteroid.getY());
+                    }
 
 
-                        if (Life <= 0) { //if the player life is less than 0 then the player dies and looses the game
-                            System.out.println(Life);
-                            player.setDying(true);
+                    if (player.isVisible() && !germ.isDestroyed()) {
 
-                        } else { //the player looses a life if they have more than 1 life
-                            Life = Life - 1;
+                        if (g.intersects(p)) { //checks if the germ coordinates are within the player hitbox/collision coordinates
                             germ.setDestroyed(true);
+
+
+                            if (Life <= 0) { //if the player life is less than 0 then the player dies and looses the game
+                                System.out.println(Life);
+                                player.setDying(true);
+
+                            } else { //the player looses a life if they have more than 1 life
+                                Life = Life - 1;
+                                germ.setDestroyed(true);
+                            }
                         }
                     }
-                }
 
 
-                if (!germ.isDestroyed()) {
+                    if (!germ.isDestroyed()) {
 
-                    germ.setY(germ.getY() + 5);
+                        germ.setY(germ.getY() + 5);
 
-                    if (germ.getY() >= Variables.FloorLevel - Variables.GermHeight - 10) { //if the germ  gets to just above the floor level, destroy it
+                        if (germ.getY() >= Variables.FloorLevel - Variables.GermHeight - 10) { //if the germ  gets to just above the floor level, destroy it
 
-                        germ.setDestroyed(true);
+                            germ.setDestroyed(true);
+                        }
                     }
                 }
             }
 
             for (Alien ukcovid : aliens) { //same as above but for the uk covid
+                if (ukcovid.getY() >= 0) {
 
                 int shot2 = generator.nextInt(2000);
                 Alien.Germ germ2 = ukcovid.getGerm();
@@ -951,43 +964,44 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 Rectangle g = new Rectangle(germ2.getX(), germ2.getY(), 5, 20);
 
 
-                if (shot2 == Variables.Chance && ukcovid.isVisible() && germ2.isDestroyed()) {
+                    if (shot2 == Variables.Chance && ukcovid.isVisible() && germ2.isDestroyed()) {
 
-                    germ2.setDestroyed(false);
-                    germ2.setX(ukcovid.getX());
-                    germ2.setY(ukcovid.getY());
-                }
+                        germ2.setDestroyed(false);
+                        germ2.setX(ukcovid.getX());
+                        germ2.setY(ukcovid.getY());
+                    }
 
-                int germX = germ2.getX();
-                int germY = germ2.getY();
-                int playerX = player.getX();
-                int playerY = player.getY();
+                    int germX = germ2.getX();
+                    int germY = germ2.getY();
+                    int playerX = player.getX();
+                    int playerY = player.getY();
 
-                if (player.isVisible() && !germ2.isDestroyed()) {
+                    if (player.isVisible() && !germ2.isDestroyed()) {
 
-                    if (g.intersects(p)) {
-                        germ2.setDestroyed(true);
+                        if (g.intersects(p)) {
+                            germ2.setDestroyed(true);
 
-                        // var ii = new ImageIcon(explImg);
-                        //player.setImage(ii.getImage());
-                        if (Life <= 0) {
-                            System.out.println(Life);
-                            player.setDying(true);
+                            // var ii = new ImageIcon(explImg);
+                            //player.setImage(ii.getImage());
+                            if (Life <= 0) {
+                                System.out.println(Life);
+                                player.setDying(true);
 
-                        } else {
-                            Life = Life - 1;
+                            } else {
+                                Life = Life - 1;
+                            }
                         }
                     }
-                }
 
 
-                if (!germ2.isDestroyed()) {
+                    if (!germ2.isDestroyed()) {
 
-                    germ2.setY(germ2.getY() + 1);
+                        germ2.setY(germ2.getY() + 1);
 
-                    if (germ2.getY() >= Variables.FloorLevel - Variables.GermHeight) {
+                        if (germ2.getY() >= Variables.FloorLevel - Variables.GermHeight) {
 
-                        germ2.setDestroyed(true);
+                            germ2.setDestroyed(true);
+                        }
                     }
                 }
             }
@@ -1049,65 +1063,67 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
             var generator2 = new Random(); //the same method for generating the germ but for the mask
             for (Asteroid asteroid : asteroids) {
-                int shoot = generator2.nextInt(10000); //determines the chance of a mask spawning
-                Asteroid.Mask BatteryPack = asteroid.getMask();
+                if (asteroid.getY() >= 0) {
+                    int shoot = generator2.nextInt(10000); //determines the chance of a mask spawning
+                    Asteroid.Mask BatteryPack = asteroid.getMask();
 
-                if (shoot == Variables.Chance && asteroid.isVisible() && BatteryPack.isDestroyed2()) {
-                    BatteryPack.setDestroyed2(false);
-                    BatteryPack.setX(asteroid.getX());
-                    BatteryPack.setY(asteroid.getY());
-                }
-                int maskX = BatteryPack.getX();
-                int maskY = BatteryPack.getY();
-                int playerX = player.getX();
-                int playerY = player.getY();
+                    if (shoot == Variables.Chance && asteroid.isVisible() && BatteryPack.isDestroyed2()) {
+                        BatteryPack.setDestroyed2(false);
+                        BatteryPack.setX(asteroid.getX());
+                        BatteryPack.setY(asteroid.getY());
+                    }
+                    int maskX = BatteryPack.getX();
+                    int maskY = BatteryPack.getY();
+                    int playerX = player.getX();
+                    int playerY = player.getY();
 
-                if (player.isVisible() && !BatteryPack.isDestroyed2()) {
-                    if (maskX >= (playerX) && maskX <= (playerX + Variables.PlayerWidth + 20)
-                            && maskY >= (playerY)
-                            && maskY <= (playerY + Variables.PlayerHeight + 20)) {
-                        BatteryPack.setDestroyed2(true);
-                        Music Music = new Music(); //call the music method
-                        if (Projectiles <= 3) {
-                            Projectiles = Projectiles + 1;
+                    if (player.isVisible() && !BatteryPack.isDestroyed2()) {
+                        if (maskX >= (playerX) && maskX <= (playerX + Variables.PlayerWidth + 20)
+                                && maskY >= (playerY)
+                                && maskY <= (playerY + Variables.PlayerHeight + 20)) {
+                            BatteryPack.setDestroyed2(true);
+                            Music Music = new Music(); //call the music method
+                            if (Projectiles <= 3) {
+                                Projectiles = Projectiles + 1;
 
 
-                            //We run this play sound method in a new thread otherwise the game would pause until the sound has been played, which we dont want
-                            new Thread(
-                                    () -> {
-                                        try {
-                                            Music.playSound("src/Mask.wav"); // This plays the shooting sound for picking up the masks
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                    }).start();
-                            if (Life == 3) {
+                                //We run this play sound method in a new thread otherwise the game would pause until the sound has been played, which we dont want
                                 new Thread(
                                         () -> {
                                             try {
-                                                Music.playSound("src/PowerUp.wav"); // This plays power up sound when the player hits 3 lives and they begin shooting faster
+                                                Music.playSound("src/Mask.wav"); // This plays the shooting sound for picking up the masks
                                             } catch (Exception e) {
                                                 e.printStackTrace();
                                             }
                                         }).start();
+                                if (Life == 3) {
+                                    new Thread(
+                                            () -> {
+                                                try {
+                                                    Music.playSound("src/PowerUp.wav"); // This plays power up sound when the player hits 3 lives and they begin shooting faster
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }).start();
+                                }
+
+
                             }
 
-
                         }
-
                     }
-                }
-                if (!BatteryPack.isDestroyed2()) {
+                    if (!BatteryPack.isDestroyed2()) {
 
-                    BatteryPack.setY(BatteryPack.getY() + 1);
+                        BatteryPack.setY(BatteryPack.getY() + 1);
 
-                    if (BatteryPack.getY() >= Variables.FloorLevel - Variables.MaskHeight) {
+                        if (BatteryPack.getY() >= Variables.FloorLevel - Variables.MaskHeight) {
 
-                        BatteryPack.setDestroyed2(true);
+                            BatteryPack.setDestroyed2(true);
+                        }
                     }
+
+
                 }
-
-
             }
         }
 
@@ -1251,8 +1267,11 @@ public class CE203_BS19624_Ass2 extends JFrame {
             }
             boolean fired = false;
 
+
+
             @Override
             public void keyPressed(KeyEvent e) { //for shooting the dispense projectile on spacebar press
+
 
                 player.keyPressed(e);
 
@@ -1268,24 +1287,8 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
 
 
-                    if (inGame && !fired) {
-                        new Thread(new Runnable()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                fired = true;
 
-                                try {
-                                    Thread.sleep(100);
-                                } catch (InterruptedException interruptedException) {
-                                    interruptedException.printStackTrace();
-                                }
 
-                                fired = false;
-                            }
-                        }).start();
-                    }
 
 
 
@@ -1316,7 +1319,16 @@ public class CE203_BS19624_Ass2 extends JFrame {
                             dispenses.add(dispense);
                             // }
                         }
-
+                    if (inGame && !fired) {
+                        fired=true;
+                        java.util.Timer timer = new java.util.Timer();
+                        timer.schedule(new TimerTask(){
+                            @Override
+                            public void run() {
+                                fired=false;
+                            }
+                        }, 250);
+                    }
 
 
 
@@ -2022,15 +2034,15 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 Variables.AsteroidHeight = 50;
                 Variables.AsteroidWidth = 60;
                 Variables.CovidInitX = 150;
-                Variables.CovidInitY = -2500;
-                Variables.UKCovidInitX = 150;
-                Variables.UKCovidInitY = 5;
+                Variables.CovidInitY = -2250;
+                Variables.UKCovidInitX = 250;
+                Variables.UKCovidInitY = 100;
                 Variables.UKCovidHeight = 50;
                 Variables.UKCovidWidth = 60;
 
-                Variables.GoDown = 50;
+                Variables.GoDown = 70;
                 Variables.GoDown2 = 30;
-                Variables.AmountOfCovidToKill = 550;
+                Variables.AmountOfCovidToKill = 700;
                 Variables.Chance = 1;
                 Variables.Delay = 10;
                 Variables.PlayerWidth = 30;
