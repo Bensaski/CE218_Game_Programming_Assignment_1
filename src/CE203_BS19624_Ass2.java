@@ -34,6 +34,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
     public static boolean endlesscheck = false;
     public static boolean insanecheck = false;
     private int deaths = 0;
+   static int Projectiles = 1;
 
     public static Variables var = new Variables();
 
@@ -65,10 +66,8 @@ public class CE203_BS19624_Ass2 extends JFrame {
         //This message dialog shows the aim of the game and the rules. At the bottom is a link to the gov.uk website for coronavirus advice and guidelines.
         JOptionPane.showMessageDialog(null, "Aliens have come to invade earth!\n With their new gravity harness weapons, they have redirected the nearest asteroid belt towards earth, sending asteroids our way." +
                 "\nYour job is to destroy the asteroids and aliens to save humanity!aa ");
-        String Difficulty = JOptionPane.showInputDialog("Which Difficulty would you like? Easy,Hard or Endless"); //gets the chosen difficulty for
-        var.Choice = Difficulty;
-        String name = JOptionPane.showInputDialog("Please enter Player Name");
-        var.name = name;
+        Variables.Choice = JOptionPane.showInputDialog("Which Difficulty would you like? Easy,Hard or Endless");
+        Variables.name = JOptionPane.showInputDialog("Please enter Player Name");
         var.Choices();
 
 
@@ -146,7 +145,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 this.x = x;
                 this.y = y;
 
-                var beamImg = "src/Images/Laser.png";
+                var beamImg = "src/Images/MiniAsteroid.png";
                 var ii = new ImageIcon(beamImg);
                 setImage(ii.getImage());
             }
@@ -261,7 +260,6 @@ public class CE203_BS19624_Ass2 extends JFrame {
     class GameLogic extends JPanel {
 
 
-        private Dimension d;
         private java.util.List<Asteroid> asteroids; //the list of covid enemies
         private java.util.List<Alien> aliens; //the list of uk covid enemies
         private java.util.List<Boss> bosses; //the list of uk covid enemies
@@ -281,9 +279,8 @@ public class CE203_BS19624_Ass2 extends JFrame {
         private int direction3 = 3;
 
         int Life = 4; //the amount of life the player has depending on how many masks they have picked up (Max will be 3)
-        int Projectiles = 1;
+
         BufferedImage img;
-        Variables Variables = new Variables();
 
 
         private boolean inGame = true;
@@ -291,7 +288,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
         String explImg = "src/images/Explosion.png";
         private Timer timer;
         long start = System.currentTimeMillis(); //this starts the timer based on the current system time. This will be used to score the user on how fast they kill the covid invasion
-        String name = Variables.name; //This will call the code to enter the players name in the Variables class
+        String name = CE203_BS19624_Ass2.Variables.name; //This will call the code to enter the players name in the Variables class
 
 
         public GameLogic() {
@@ -305,7 +302,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
             ex.dispose();
             remove(ex);
             Variables var = new Variables();
-            var.Choice = "hard";
+            CE203_BS19624_Ass2.Variables.Choice = "hard";
             var.Choices();
             ex = new CE203_BS19624_Ass2();
             ex.setVisible(true);
@@ -316,7 +313,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
             ex.dispose();
             remove(ex);
             Variables var = new Variables();
-            var.Choice = "expert";
+            CE203_BS19624_Ass2.Variables.Choice = "expert";
             var.Choices();
             ex = new CE203_BS19624_Ass2();
             ex.setVisible(true);
@@ -326,7 +323,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
             ex.dispose();
             remove(ex);
             Variables var = new Variables();
-            var.Choice = "insane";
+            CE203_BS19624_Ass2.Variables.Choice = "insane";
             var.Choices();
             ex = new CE203_BS19624_Ass2();
             ex.setVisible(true);
@@ -337,7 +334,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
             ex.dispose();
             remove(ex);
             Variables var = new Variables();
-            var.Choice = "endless";
+            CE203_BS19624_Ass2.Variables.Choice = "endless";
             var.Choices();
             ex = new CE203_BS19624_Ass2();
             ex.setVisible(true);
@@ -349,11 +346,10 @@ public class CE203_BS19624_Ass2 extends JFrame {
             addKeyListener(new TAdapter());
             addMouseListener(new Mouse());
             setFocusable(true);
-            d = new Dimension(Variables.BoardWidth, Variables.BoardHeight); //this is the dimensions for the board that the player and covid enemies will move around
             setBackground(Color.black);
 
 
-            timer = new Timer(Variables.Delay, new GameCycle()); //this starts the timer and gamecycle method
+            timer = new Timer(CE203_BS19624_Ass2.Variables.Delay, new GameCycle()); //this starts the timer and gamecycle method
             timer.start();
 
 
@@ -365,32 +361,32 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
             asteroids = new ArrayList<>();
 
-            for (int i = 0; i < Variables.CovidRow; i++) {
-                for (int j = 0; j < Variables.CovidColumn; j++) { //This determines how many rows and columns of Covid Spawn
+            for (int i = 0; i < CE203_BS19624_Ass2.Variables.CovidRow; i++) {
+                for (int j = 0; j < CE203_BS19624_Ass2.Variables.CovidColumn; j++) { //This determines how many rows and columns of Covid Spawn
 
-                    var CovidActor = new Asteroid(Variables.CovidInitX + 70 * j, //this determines the gap between each covid
-                            Variables.CovidInitY + 50 * i);
+                    var CovidActor = new Asteroid(CE203_BS19624_Ass2.Variables.CovidInitX + 70 * j, //this determines the gap between each covid
+                            CE203_BS19624_Ass2.Variables.CovidInitY + 50 * i);
                     asteroids.add(CovidActor);
                 }
             }
 
             aliens = new ArrayList<>();
 
-            for (int i = 0; i < Variables.UKCovidRow; i++) {
-                for (int j = 0; j < Variables.UKCovidColumn; j++) { //This determines how many rows and columns of Covid Spawn
+            for (int i = 0; i < CE203_BS19624_Ass2.Variables.UKCovidRow; i++) {
+                for (int j = 0; j < CE203_BS19624_Ass2.Variables.UKCovidColumn; j++) { //This determines how many rows and columns of Covid Spawn
 
-                    var UKCovidActor = new Alien(Variables.UKCovidInitX + 80 * j, //this determines the gap between each covid
-                            Variables.UKCovidInitY + 50 * i);
+                    var UKCovidActor = new Alien(CE203_BS19624_Ass2.Variables.UKCovidInitX + 80 * j, //this determines the gap between each covid
+                            CE203_BS19624_Ass2.Variables.UKCovidInitY + 50 * i);
                     aliens.add(UKCovidActor);
                 }
             }
             bosses = new ArrayList<>();
 
-            for (int i = 0; i < Variables.BossRow; i++) {
-                for (int j = 0; j < Variables.BossColumn; j++) { //This determines how many rows and columns of Covid Spawn
+            for (int i = 0; i < CE203_BS19624_Ass2.Variables.BossRow; i++) {
+                for (int j = 0; j < CE203_BS19624_Ass2.Variables.BossColumn; j++) { //This determines how many rows and columns of Covid Spawn
 
-                    var BossActor = new Boss(Variables.UKCovidInitX + 80 * j, //this determines the gap between each covid
-                            Variables.UKCovidInitY + 50 * i);
+                    var BossActor = new Boss(CE203_BS19624_Ass2.Variables.UKCovidInitX + 300 * j, //this determines the gap between each covid
+                            CE203_BS19624_Ass2.Variables.UKCovidInitY + 50 * i);
                     bosses.add(BossActor);
                 }
             }
@@ -558,13 +554,14 @@ public class CE203_BS19624_Ass2 extends JFrame {
             //estimatedTime = estimatedTime - PausedTotal;
             String elapsed = String.valueOf(estimatedTime);
             g.drawString("Time Elapsed : " + elapsed + " s", 700, 50);
+            g.drawString("Level :  " + Variables.Choice ,400,50);
 
 
             if (inGame) {
 
 
-                g.drawLine(0, Variables.FloorLevel,
-                        Variables.BoardWidth, Variables.FloorLevel); //droors the floor level that the player is on
+                g.drawLine(0, CE203_BS19624_Ass2.Variables.FloorLevel,
+                        CE203_BS19624_Ass2.Variables.BoardWidth, CE203_BS19624_Ass2.Variables.FloorLevel); //droors the floor level that the player is on
 
                 drawCovids(g);
                 drawPlayer(g);
@@ -589,20 +586,20 @@ public class CE203_BS19624_Ass2 extends JFrame {
         private void gameOver(Graphics g) { // creates the game over screen when the player loses
 
             g.setColor(Color.black);
-            g.fillRect(0, 0, Variables.BoardWidth, Variables.BoardHeight);
+            g.fillRect(0, 0, CE203_BS19624_Ass2.Variables.BoardWidth, CE203_BS19624_Ass2.Variables.BoardHeight);
 
             g.setColor(new Color(0, 32, 48));
-            g.fillRect(50, Variables.BoardWidth / 2 - 30, Variables.BoardWidth - 100, 50);
+            g.fillRect(50, CE203_BS19624_Ass2.Variables.BoardWidth / 2 - 30, CE203_BS19624_Ass2.Variables.BoardWidth - 100, 50);
             g.setColor(Color.white);
-            g.drawRect(50, Variables.BoardWidth / 2 - 30, Variables.BoardWidth - 100, 50);
+            g.drawRect(50, CE203_BS19624_Ass2.Variables.BoardWidth / 2 - 30, CE203_BS19624_Ass2.Variables.BoardWidth - 100, 50);
 
             var small = new Font("Helvetica", Font.BOLD, 14);
             var fontMetrics = this.getFontMetrics(small);
 
             g.setColor(Color.white);
             g.setFont(small);
-            g.drawString(message, (Variables.BoardWidth - fontMetrics.stringWidth(message)) / 2,
-                    Variables.BoardWidth / 2);
+            g.drawString(message, (CE203_BS19624_Ass2.Variables.BoardWidth - fontMetrics.stringWidth(message)) / 2,
+                    CE203_BS19624_Ass2.Variables.BoardWidth / 2);
         }
 
         private void WriteFile(String FilePath, long TimeElapsed) {
@@ -669,23 +666,23 @@ public class CE203_BS19624_Ass2 extends JFrame {
             public void run() {
                 for (Asteroid asteroid : asteroids) { //changing directions when the asteroid enemies hit the edge
                     int x = asteroid.getX();
-                    if (x >= Variables.BoardWidth - Variables.BorderRight && direction != -1) {
+                    if (x >= CE203_BS19624_Ass2.Variables.BoardWidth - CE203_BS19624_Ass2.Variables.BorderRight && direction != -1) {
                         direction = -1;
                         for (Asteroid a2 : asteroids) {
-                            a2.setY(a2.getY() + Variables.GoDown);
+                            a2.setY(a2.getY() + CE203_BS19624_Ass2.Variables.GoDown);
                         }
                     }
-                    if (x <= Variables.BorderLeft && direction != 1) {
+                    if (x <= CE203_BS19624_Ass2.Variables.BorderLeft && direction != 1) {
                         direction = 1;
                         for (Asteroid a : asteroids) {
-                            a.setY(a.getY() + Variables.GoDown);
+                            a.setY(a.getY() + CE203_BS19624_Ass2.Variables.GoDown);
                         }
                     }
                 }
                 for (Asteroid asteroid : asteroids) {
                     if (asteroid.isVisible()) {
                         int y = asteroid.getY();
-                        if (y > Variables.FloorLevel - Variables.AsteroidHeight) { //if the covid enemy reaches the floor level, then the game is lost and covid has invaded
+                        if (y > CE203_BS19624_Ass2.Variables.FloorLevel - CE203_BS19624_Ass2.Variables.AsteroidHeight) { //if the covid enemy reaches the floor level, then the game is lost and covid has invaded
                             inGame = false;
                             message = "Invasion!";
                         }
@@ -700,23 +697,23 @@ public class CE203_BS19624_Ass2 extends JFrame {
             public void run() {
                 for (Boss boss : bosses) { //changing directions when the asteroid enemies hit the edge
                     int x = boss.getX();
-                    if (x >= Variables.BoardWidth - Variables.BorderRight && direction3 != -3) {
+                    if (x >= CE203_BS19624_Ass2.Variables.BoardWidth - CE203_BS19624_Ass2.Variables.BorderRight && direction3 != -3) {
                         direction3 = -3;
                         for (Boss b2 : bosses) {
-                            b2.setY(b2.getY() + Variables.GoDown);
+                            b2.setY(b2.getY() + CE203_BS19624_Ass2.Variables.GoDown);
                         }
                     }
-                    if (x <= Variables.BorderLeft && direction3 != 3) {
+                    if (x <= CE203_BS19624_Ass2.Variables.BorderLeft && direction3 != 3) {
                         direction3 = 3;
                         for (Boss b : bosses) {
-                            b.setY(b.getY() + Variables.GoDown);
+                            b.setY(b.getY() + CE203_BS19624_Ass2.Variables.GoDown);
                         }
                     }
                 }
                 for (Boss boss : bosses) {
                     if (boss.isVisible()) {
                         int y = boss.getY();
-                        if (y > Variables.FloorLevel - Variables.AsteroidHeight) { //if the covid enemy reaches the floor level, then the game is lost and covid has invaded
+                        if (y > CE203_BS19624_Ass2.Variables.FloorLevel - CE203_BS19624_Ass2.Variables.AsteroidHeight-50) { //if the covid enemy reaches the floor level, then the game is lost and covid has invaded
                             inGame = false;
                             message = "Invasion!";
                         }
@@ -734,19 +731,19 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 for (Alien ukcovid : aliens) {
 
                     int x2 = ukcovid.getX();
-                    if (x2 >= Variables.BoardWidth - Variables.BorderRight && direction2 != -2) {
+                    if (x2 >= CE203_BS19624_Ass2.Variables.BoardWidth - CE203_BS19624_Ass2.Variables.BorderRight && direction2 != -2) {
                         direction2 = -2;
                         for (Alien a2 : aliens) {
 
 
-                            a2.setY(a2.getY() + Variables.GoDown2);
+                            a2.setY(a2.getY() + CE203_BS19624_Ass2.Variables.GoDown2);
                         }
                     }
-                    if (x2 <= Variables.BorderLeft && direction2 != 2) {
+                    if (x2 <= CE203_BS19624_Ass2.Variables.BorderLeft && direction2 != 2) {
                         direction2 = 2;
                         for (Alien a2 : aliens) {
 
-                            a2.setY(a2.getY() + Variables.GoDown2);
+                            a2.setY(a2.getY() + CE203_BS19624_Ass2.Variables.GoDown2);
 
                         }
                     }
@@ -754,7 +751,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 for (Alien ukcovid : aliens) {
                     if (ukcovid.isVisible()) {
                         int y = ukcovid.getY();
-                        if (y > Variables.FloorLevel - Variables.UKCovidHeight) {
+                        if (y > CE203_BS19624_Ass2.Variables.FloorLevel - CE203_BS19624_Ass2.Variables.UKCovidHeight) {
                             inGame = false;
                             message = "Invasion!";
                         }
@@ -766,19 +763,6 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
 
 
-        class PlayAsteroidSound extends Thread{
-            public void run(){
-                Music Music = new Music(); //call the music method
-                try {
-                    Music.playSound("src/Hit.wav"); // This plays the shooting sound for picking up the masks
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                    }
-
-
-        }
-
 
 
 
@@ -787,7 +771,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
         UkCovidMoveDown threadB = new UkCovidMoveDown();
         DispenseMoveUp threadD = new DispenseMoveUp();
         BossMoveDown threadC = new BossMoveDown();
-        Rectangle p = new Rectangle(0,0,Variables.PlayerWidth,Variables.PlayerHeight);
+        Rectangle p = new Rectangle(0,0, CE203_BS19624_Ass2.Variables.PlayerWidth, CE203_BS19624_Ass2.Variables.PlayerHeight);
 
 
         private void update() { //this body of code runs throughout the game
@@ -796,7 +780,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
             int playerX1 = player.getX();
             int playerY1 = player.getY();
             p.setLocation(playerX1 - 25, playerY1 + 10);
-            if (deaths == Variables.AmountOfCovidToKill) {
+            if (deaths == CE203_BS19624_Ass2.Variables.AmountOfCovidToKill) {
                 deaths=0;
 
                 if (CE203_BS19624_Ass2.Variables.Choice.equals("hard") || CE203_BS19624_Ass2.Variables.Choice.equals("Hard")) {
@@ -918,9 +902,9 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
                     if (BossActors.isVisible() && dispense.isVisible()) {
                         if (shotX >= (BossActorsX)
-                                && shotX <= (BossActorsX + Variables.AsteroidWidth + 200)
+                                && shotX <= (BossActorsX + CE203_BS19624_Ass2.Variables.AsteroidWidth + 200)
                                 && shotY >= (BossActorsY)
-                                && shotY <= (BossActorsY + Variables.AsteroidHeight + 200)) {
+                                && shotY <= (BossActorsY + CE203_BS19624_Ass2.Variables.AsteroidHeight + 100)) {
                             if (BossActors.getHealth() == 0) {
 
                                 var ii = new ImageIcon(explImg);
@@ -937,9 +921,6 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 }
                 i++;
             }
-
-
-
 
 
             threadA.run();
@@ -961,7 +942,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
                     Rectangle g = new Rectangle(beam.getX(), beam.getY(), 5, 20);
 
 
-                    if (shot == Variables.Chance && asteroid.isVisible() && beam.isDestroyed()) { //if the shot generator is the same as the chance variable, then spawn a germ
+                    if (shot == CE203_BS19624_Ass2.Variables.Chance && asteroid.isVisible() && beam.isDestroyed()) { //if the shot generator is the same as the chance variable, then spawn a germ
 
                         beam.setDestroyed(false);
                         beam.setX(asteroid.getX()); //spawns where the covid enemy is
@@ -989,9 +970,9 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
                     if (!beam.isDestroyed()) {
 
-                        beam.setY(beam.getY() + 5);
+                        beam.setY(beam.getY() + 3);
 
-                        if (beam.getY() >= Variables.FloorLevel - Variables.BeamHeight - 10) { //if the germ  gets to just above the floor level, destroy it
+                        if (beam.getY() >= CE203_BS19624_Ass2.Variables.FloorLevel - CE203_BS19624_Ass2.Variables.BeamHeight - 10) { //if the germ  gets to just above the floor level, destroy it
 
                             beam.setDestroyed(true);
                         }
@@ -1011,7 +992,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 Rectangle g = new Rectangle(beam2.getX(), beam2.getY(), 5, 20);
 
 
-                    if (shot2 == Variables.Chance && ukcovid.isVisible() && beam2.isDestroyed()) {
+                    if (shot2 == CE203_BS19624_Ass2.Variables.Chance && ukcovid.isVisible() && beam2.isDestroyed()) {
 
                         beam2.setDestroyed(false);
                         beam2.setX(ukcovid.getX());
@@ -1038,9 +1019,9 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
                     if (!beam2.isDestroyed()) {
 
-                        beam2.setY(beam2.getY() + 1);
+                        beam2.setY(beam2.getY() + 6);
 
-                        if (beam2.getY() >= Variables.FloorLevel - Variables.BeamHeight) {
+                        if (beam2.getY() >= CE203_BS19624_Ass2.Variables.FloorLevel - CE203_BS19624_Ass2.Variables.BeamHeight) {
 
                             beam2.setDestroyed(true);
                         }
@@ -1061,7 +1042,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 Rectangle g = new Rectangle(beam2.getX(), beam2.getY(), 5, 20);
 
 
-                if (shot3 == Variables.Chance && boss.isVisible() && beam2.isDestroyed()) {
+                if (shot3 == CE203_BS19624_Ass2.Variables.Chance && boss.isVisible() && beam2.isDestroyed()) {
 
                     beam2.setDestroyed(false);
                     beam2.setX(boss.getX());
@@ -1090,9 +1071,9 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
                 if (!beam2.isDestroyed()) {
 
-                    beam2.setY(beam2.getY() + 10);
+                    beam2.setY(beam2.getY() + 6);
 
-                    if (beam2.getY() >= Variables.FloorLevel - Variables.BeamHeight) {
+                    if (beam2.getY() >= CE203_BS19624_Ass2.Variables.FloorLevel - CE203_BS19624_Ass2.Variables.BeamHeight) {
 
                         beam2.setDestroyed(true);
                     }
@@ -1103,10 +1084,10 @@ public class CE203_BS19624_Ass2 extends JFrame {
             var generator2 = new Random(); //the same method for generating the germ but for the mask
             for (Asteroid asteroid : asteroids) {
                 if (asteroid.getY() >= 0) {
-                    int shoot = generator2.nextInt(10000); //determines the chance of a mask spawning
+                    int shoot = generator2.nextInt(20000); //determines the chance of a mask spawning
                     Asteroid.Battery BatteryPack = asteroid.getBattery();
 
-                    if (shoot == Variables.Chance && asteroid.isVisible() && BatteryPack.isDestroyed2()) {
+                    if (shoot == CE203_BS19624_Ass2.Variables.Chance && asteroid.isVisible() && BatteryPack.isDestroyed2()) {
                         BatteryPack.setDestroyed2(false);
                         BatteryPack.setX(asteroid.getX());
                         BatteryPack.setY(asteroid.getY());
@@ -1117,13 +1098,14 @@ public class CE203_BS19624_Ass2 extends JFrame {
                     int playerY = player.getY();
 
                     if (player.isVisible() && !BatteryPack.isDestroyed2()) {
-                        if (batteryX >= (playerX) && batteryX <= (playerX + Variables.PlayerWidth + 20)
+                        if (batteryX >= (playerX) && batteryX <= (playerX + CE203_BS19624_Ass2.Variables.PlayerWidth + 20)
                                 && batteryY >= (playerY)
-                                && batteryY <= (playerY + Variables.PlayerHeight + 20)) {
+                                && batteryY <= (playerY + CE203_BS19624_Ass2.Variables.PlayerHeight + 20)) {
                             BatteryPack.setDestroyed2(true);
                             Music Music = new Music(); //call the music method
-                            if (Projectiles <= 3) {
+                            if (Projectiles <3) {
                                 Projectiles = Projectiles + 1;
+
 
 
                                 //We run this play sound method in a new thread otherwise the game would pause until the sound has been played, which we dont want
@@ -1147,15 +1129,16 @@ public class CE203_BS19624_Ass2 extends JFrame {
                                 }
 
 
+
                             }
 
                         }
                     }
                     if (!BatteryPack.isDestroyed2()) {
 
-                        BatteryPack.setY(BatteryPack.getY() + 1);
+                        BatteryPack.setY(BatteryPack.getY() + 2);
 
-                        if (BatteryPack.getY() >= Variables.FloorLevel - Variables.BatteryHeight) {
+                        if (BatteryPack.getY() >= CE203_BS19624_Ass2.Variables.FloorLevel - CE203_BS19624_Ass2.Variables.BatteryHeight) {
 
                             BatteryPack.setDestroyed2(true);
                         }
@@ -1168,25 +1151,25 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
         public void HighScore2(){
             //Writing highscores to the relevant files with the WriteFile method declared above
-            if (Variables.Choice.equals("Easy") || Variables.Choice.equals("easy")) {
+            if (CE203_BS19624_Ass2.Variables.Choice.equals("Easy") || CE203_BS19624_Ass2.Variables.Choice.equals("easy")) {
                 String FilePath = "src/HighScoreEasy.txt";
                 WriteFile(FilePath, TimeElapsed);
             }
 
-            if (Variables.Choice.equals("Hard") || Variables.Choice.equals("hard")) {
+            if (CE203_BS19624_Ass2.Variables.Choice.equals("Hard") || CE203_BS19624_Ass2.Variables.Choice.equals("hard")) {
                 String FilePath = "src/HighScoreHard.txt";
                 WriteFile(FilePath, TimeElapsed);
             }
 
-            if (Variables.Choice.equals("Expert") || Variables.Choice.equals("expert")) {
+            if (CE203_BS19624_Ass2.Variables.Choice.equals("Expert") || CE203_BS19624_Ass2.Variables.Choice.equals("expert")) {
                 String FilePath = "src/HighScoreExpert.txt";
                 WriteFile(FilePath, TimeElapsed);
             }
-            if (Variables.Choice.equals("Insane") || Variables.Choice.equals("insane")) {
+            if (CE203_BS19624_Ass2.Variables.Choice.equals("Insane") || CE203_BS19624_Ass2.Variables.Choice.equals("insane")) {
                 String FilePath = "src/HighScoreInsane.txt";
                 WriteFile(FilePath, TimeElapsed);
             }
-            if (Variables.Choice.equals("Endless") || Variables.Choice.equals("endless")) {
+            if (CE203_BS19624_Ass2.Variables.Choice.equals("Endless") || CE203_BS19624_Ass2.Variables.Choice.equals("endless")) {
                 String FilePath = "src/HighScoreEndless.txt";
                 WriteFile(FilePath, TimeElapsed);
             }
@@ -1196,94 +1179,93 @@ public class CE203_BS19624_Ass2 extends JFrame {
         public void HighScore() throws IOException { //This method shows the highscore box
 
 
-            String input = "";
+            StringBuilder input = new StringBuilder();
             int i = 0;
             int i2 = 0;
-            int i3 = 0;
-            if (Variables.Choice.equals("Easy") || Variables.Choice.equals("easy")) {
+            if (CE203_BS19624_Ass2.Variables.Choice.equals("Easy") || CE203_BS19624_Ass2.Variables.Choice.equals("easy")) {
                 BufferedReader reader = new BufferedReader(new FileReader("src/HighScoreEasy.txt")); //Depending on the difficulty chosen, it will write to the file that corresponds to that difficulty
 
 
-                String line = null;
+                String line;
                 while ((line = reader.readLine()) != null & i < 5) { //This reads the first 5 lines of the text file since the assignment brief only wants to show the first 5 high scores
 
                     //Add the line and then "\n" indicating a new line
-                    input += line + " Seconds\n";
+                    input.append(line).append(" Seconds\n");
                     i += 1;
 
 
                 }
 
                 reader.close();
-                JOptionPane.showMessageDialog(null, input, "High Scores Easy", JOptionPane.INFORMATION_MESSAGE); //Then show a message dialog box with the 5 high scores sorted. This is the same for the other difficulties
+                JOptionPane.showMessageDialog(null, input.toString(), "High Scores Easy", JOptionPane.INFORMATION_MESSAGE); //Then show a message dialog box with the 5 high scores sorted. This is the same for the other difficulties
                 HardLevel();
                 //System.exit(0);
 
 
             }
-            if (Variables.Choice.equals("Hard") || Variables.Choice.equals("hard") && hardcheck) {
+            if (CE203_BS19624_Ass2.Variables.Choice.equals("Hard") || CE203_BS19624_Ass2.Variables.Choice.equals("hard") && hardcheck) {
                 BufferedReader reader = new BufferedReader(new FileReader("src/HighScoreHard.txt"));
 
 
-                String line = null;
+                String line;
                 while ((line = reader.readLine()) != null & i2 < 5) {
                     //Add the line and then "\n" indicating a new line
-                    input += line + " Seconds \n";
+                    input.append(line).append(" Seconds \n");
                     i2 += 1;
                 }
                 reader.close();
-                JOptionPane.showMessageDialog(null, input, "High Scores Hard", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, input.toString(), "High Scores Hard", JOptionPane.INFORMATION_MESSAGE);
                 hardcheck = false;
                 ExpertLevel();
 
 
             }
-            if (Variables.Choice.equals("Expert") || Variables.Choice.equals("expert") && expertcheck) {
+            if (CE203_BS19624_Ass2.Variables.Choice.equals("Expert") || CE203_BS19624_Ass2.Variables.Choice.equals("expert") && expertcheck) {
                 BufferedReader reader = new BufferedReader(new FileReader("src/HighScoreExpert.txt"));
 
 
-                String line = null;
+                String line;
                 while ((line = reader.readLine()) != null & i2 < 5) {
                     //Add the line and then "\n" indicating a new line
-                    input += line + " Seconds \n";
+                    input.append(line).append(" Seconds \n");
                     i2 += 1;
                 }
                 reader.close();
-                JOptionPane.showMessageDialog(null, input, "High Scores Expert", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, input.toString(), "High Scores Expert", JOptionPane.INFORMATION_MESSAGE);
                 expertcheck = false;
                 InsaneLevel();
 
 
             }
-            if (Variables.Choice.equals("Insane") || Variables.Choice.equals("insane") && insanecheck) {
+            if (CE203_BS19624_Ass2.Variables.Choice.equals("Insane") || CE203_BS19624_Ass2.Variables.Choice.equals("insane") && insanecheck) {
                 BufferedReader reader = new BufferedReader(new FileReader("src/HighScoreInsane.txt"));
 
 
-                String line = null;
+                String line;
                 while ((line = reader.readLine()) != null & i2 < 5) {
                     //Add the line and then "\n" indicating a new line
-                    input += line + " Seconds \n";
+                    input.append(line).append(" Seconds \n");
                     i2 += 1;
                 }
                 reader.close();
-                JOptionPane.showMessageDialog(null, input, "High Scores Insane", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, input.toString(), "High Scores Insane", JOptionPane.INFORMATION_MESSAGE);
                 insanecheck = false;
                 EndlessLevel();
 
 
             }
-            if (Variables.Choice.equals("Endless") || Variables.Choice.equals("endless") && endlesscheck) {
+            if (CE203_BS19624_Ass2.Variables.Choice.equals("Endless") || CE203_BS19624_Ass2.Variables.Choice.equals("endless") && endlesscheck) {
                 BufferedReader reader = new BufferedReader(new FileReader("src/HighScoreEndless.txt"));
 
 
-                String line = null;
+                String line;
                 while ((line = reader.readLine()) != null & i2 < 5) {
                     //Add the line and then "\n" indicating a new line
-                    input += line + " Seconds\n";
+                    input.append(line).append(" Seconds\n");
                     i2 += 1;
                 }
                 reader.close();
-                JOptionPane.showMessageDialog(null, input, "High Scores Endless", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, input.toString(), "High Scores Endless", JOptionPane.INFORMATION_MESSAGE);
                 System.exit(0);
 
             }
@@ -1352,7 +1334,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
 
 
-                        if (Projectiles== 3 && !fired) {
+                        if (Projectiles== 2 && !fired) {
                             dispense = new Dispense(x, y);
                             dispenses.add(dispense);
                             dispense = new Dispense(x + 60, y+50);
@@ -1360,7 +1342,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
 
 
-                        } else if (Projectiles == 4 && !fired) {
+                        } else if (Projectiles == 3 && !fired) {
                         dispense = new Dispense(x, y);
                         dispenses.add(dispense);
                         dispense = new Dispense(x + 60, y+50);
@@ -1479,18 +1461,14 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
     static class Music { //this class holds the method for playing a music file
 
-        private final int BUFFER_SIZE = 128000;
         private File soundFile;
         private AudioInputStream audioStream;
-        private AudioFormat audioFormat;
         private SourceDataLine sourceLine;
 
         public void playSound(String filename) {
 
-            String strFilename = filename;
-
             try {
-                soundFile = new File(strFilename); //sets the soundFile variables to the sound file name
+                soundFile = new File(filename); //sets the soundFile variables to the sound file name
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(1);
@@ -1503,15 +1481,12 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 System.exit(1);
             }
 
-            audioFormat = audioStream.getFormat(); //determines the audio format eg wav,mp3 etc
+            AudioFormat audioFormat = audioStream.getFormat(); //determines the audio format eg wav,mp3 etc
 
             DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
             try {
                 sourceLine = (SourceDataLine) AudioSystem.getLine(info);
                 sourceLine.open(audioFormat);
-            } catch (LineUnavailableException e) {
-                e.printStackTrace();
-                System.exit(1);
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(1);
@@ -1520,6 +1495,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
             sourceLine.start();
 
             int nBytesRead = 0;
+            int BUFFER_SIZE = 128000;
             byte[] abData = new byte[BUFFER_SIZE]; //sets the buffer size
             while (nBytesRead != -1) {
                 try {
@@ -1609,17 +1585,17 @@ public class CE203_BS19624_Ass2 extends JFrame {
             if (x <= 2) {
                 x = 2;
             }
-            if (x >= Variables.BoardWidth - 1 * width) { //only does the movement if the player is not on the edge of the screen
+            if (x >= Variables.BoardWidth - width) { //only does the movement if the player is not on the edge of the screen
 
-                x = Variables.BoardWidth - 1 * width;
+                x = Variables.BoardWidth - width;
             }
             y += dy;
             if (y <= 2) {
                 y = 2;
             }
-            if (y >= Variables.BoardWidth - 1 * height) { //only does the movement if the player is not on the edge of the screen
+            if (y >= Variables.BoardWidth - height) { //only does the movement if the player is not on the edge of the screen
 
-                y = Variables.BoardWidth - 1 * height;
+                y = Variables.BoardWidth - height;
             }
         }
 
@@ -1750,7 +1726,6 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
     class Alien extends Sprite { // the class for the UkCovid, this is the same as the Covid class but slightly altered for UkCovid
         private Beam beam;
-        private Battery battery;
         private int width;
         private int height;
 
@@ -1764,7 +1739,6 @@ public class CE203_BS19624_Ass2 extends JFrame {
             this.y = y;
 
             beam = new Beam(x, y);
-            battery = new Battery(x, y);
 
             var CovidImg = "src/Images/Alien.png";
             //image obtained from : https://www.klipartz.com/en/sticker-png-fhnku
@@ -1823,43 +1797,14 @@ public class CE203_BS19624_Ass2 extends JFrame {
             }
         }
 
-        public Battery getBattery() {
-            return battery;
-        }
 
-        public class Battery extends Sprite {
-            private boolean destroyed;
-
-            public Battery(int x, int y) {
-                initBattery(x, y);
-            }
-
-            private void initBattery(int x, int y) {
-                setDestroyed2(true);
-                this.x = x;
-                this.y = y;
-
-                var batteryImg = "src/Images/Battery.png";
-                var ii = new ImageIcon(batteryImg);
-                setImage(ii.getImage());
-            }
-
-            public void setDestroyed2(boolean destroyed) {
-
-                this.destroyed = destroyed;
-            }
-
-            public boolean isDestroyed2() {
-                return destroyed;
-            }
-        }
 
     }
 
     class Boss extends Sprite { // the class for the UkCovid, this is the same as the Covid class but slightly altered for UkCovid
         private Beam beam;
         private Battery battery;
-        public int health = 50;
+        public int health = 25;
 
         public Boss(int x, int y) {
             initBoss(x, y);
@@ -1932,7 +1877,6 @@ public class CE203_BS19624_Ass2 extends JFrame {
         }
 
         public class Battery extends Sprite {
-            private boolean destroyed;
 
             public Battery(int x, int y) {
                 initBattery(x, y);
@@ -1950,12 +1894,8 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
             public void setDestroyed2(boolean destroyed) {
 
-                this.destroyed = destroyed;
             }
 
-            public boolean isDestroyed2() {
-                return destroyed;
-            }
         }
 
     }
@@ -1968,7 +1908,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
         public static int BoardWidth = 1000; //the board width
         public static int BorderLeft = 5;
         public static int BorderRight = 30;
-        public static int FloorLevel = 900; //the floor level which the player plays on and the covid enemies try to invade to
+        public static int FloorLevel = 1000; //the floor level which the player plays on and the covid enemies try to invade to
         public static int BeamHeight = 40; // germ height
         public static int BatteryHeight = 20; //mask height
 
@@ -2001,170 +1941,159 @@ public class CE203_BS19624_Ass2 extends JFrame {
         public void Choices() {
 
 
-
-            if (Choice.equals("Easy") || Choice.equals("easy")) {
-                Variables.BoardHeight = 1000;
-                Variables.BoardWidth = 1000;
-                Variables.BorderLeft = 5;
-                Variables.BorderRight = 30;
-
-                Variables.FloorLevel = 900;
-                Variables.BeamHeight = 30;
-                Variables.BatteryHeight = 40;
-                Variables.AsteroidHeight = 51;
-                Variables.AsteroidWidth = 64;
-                Variables.CovidInitX = 150;
-                Variables.CovidInitY = 60;
-                Variables.UKCovidInitX = 150;
-                Variables.UKCovidInitY = 5;
-                Variables.UKCovidHeight = 50;
-                Variables.UKCovidWidth = 40;
-
-                Variables.GoDown = 20;
-                Variables.GoDown2 = 30;
-                Variables.AmountOfCovidToKill = 40;
-                Variables.Chance = 1;
-                Variables.Delay = 10;
-                Variables.PlayerWidth = 50;
-                Variables.PlayerHeight = 80;
-                Variables.CovidRow = 3;
-                Variables.CovidColumn = 10;
-                Variables.UKCovidRow = 2;
-                Variables.UKCovidColumn = 5;
-                Variables.chosen = true;
-            } else if (Choice.equals("Hard") || Choice.equals("hard")) {
-                Variables.BoardHeight = 1000;
-                Variables.BoardWidth = 1000;
-                Variables.BorderLeft = 5;
-                Variables.BorderRight = 30;
-
-                Variables.FloorLevel = 900;
-                Variables.BeamHeight = 30;
-                Variables.BatteryHeight = 40;
-
-                Variables.AsteroidHeight = 50;
-                Variables.AsteroidWidth = 60;
-                Variables.CovidInitX = 150;
-                Variables.CovidInitY = 60;
-                Variables.UKCovidInitX = 150;
-                Variables.UKCovidInitY = 5;
-                Variables.UKCovidHeight = 50;
-                Variables.UKCovidWidth = 60;
-
-                Variables.GoDown = 50;
-                Variables.GoDown2 = 30;
-                Variables.AmountOfCovidToKill = 70;
-                Variables.Chance = 1;
-                Variables.Delay = 10;
-                Variables.PlayerWidth = 30;
-                Variables.PlayerHeight = 50;
-                Variables.CovidRow = 5;
-                Variables.CovidColumn = 10;
-                Variables.UKCovidRow = 2;
-                Variables.UKCovidColumn = 10;
-                Variables.chosen = true;
-            } else if (Choice.equals("Expert") || Choice.equals("expert")) {
-                Variables.BoardHeight = 1000;
-                Variables.BoardWidth = 1000;
-                Variables.BorderLeft = 5;
-                Variables.BorderRight = 30;
-
-                Variables.FloorLevel = 900;
-                Variables.BeamHeight = 30;
-                Variables.BatteryHeight = 40;
-                Variables.AsteroidHeight = 51;
-                Variables.AsteroidWidth = 64;
-                Variables.CovidInitX = 150;
-                Variables.CovidInitY = 60;
-                Variables.UKCovidInitX = 150;
-                Variables.UKCovidInitY = 5;
-                Variables.UKCovidHeight = 50;
-                Variables.UKCovidWidth = 40;
-
-                Variables.GoDown = 80;
-                Variables.GoDown2 = 30;
-                Variables.AmountOfCovidToKill = 101;
-                Variables.Chance = 1;
-                Variables.Delay = 10;
-                Variables.PlayerWidth = 50;
-                Variables.PlayerHeight = 80;
-                Variables.CovidRow = 8;
-                Variables.CovidColumn = 10;
-                Variables.UKCovidRow = 2;
-                Variables.UKCovidColumn = 10;
-                Variables.BossRow = 1;
-                Variables.BossColumn = 1;
-                Variables.chosen = true;
-
-            }
-            else if (Choice.equals("Insane") || Choice.equals("insane")) {
-                Variables.BoardHeight = 1000;
-                Variables.BoardWidth = 1000;
-                Variables.BorderLeft = 5;
-                Variables.BorderRight = 30;
-
-                Variables.FloorLevel = 900;
-                Variables.BeamHeight = 30;
-                Variables.BatteryHeight = 40;
-                Variables.AsteroidHeight = 51;
-                Variables.AsteroidWidth = 64;
-                Variables.CovidInitX = 150;
-                Variables.CovidInitY = 60;
-                Variables.UKCovidInitX = 150;
-                Variables.UKCovidInitY = 5;
-                Variables.UKCovidHeight = 50;
-                Variables.UKCovidWidth = 40;
-
-                Variables.GoDown = 80;
-                Variables.GoDown2 = 30;
-                Variables.AmountOfCovidToKill = 131;
-                Variables.Chance = 1;
-                Variables.Delay = 10;
-                Variables.PlayerWidth = 50;
-                Variables.PlayerHeight = 80;
-                Variables.CovidRow = 8;
-                Variables.CovidColumn = 10;
-                Variables.UKCovidRow = 5;
-                Variables.UKCovidColumn = 10;
-                Variables.BossRow = 1;
-                Variables.BossColumn = 1;
-                Variables.chosen = true;
-
-            } else if (Choice.equals("Endless") || Choice.equals("endless")) {
-                Variables.BoardHeight = 1000;
-                Variables.BoardWidth = 1000;
-                Variables.BorderLeft = 5;
-                Variables.BorderRight = 30;
-
-                Variables.FloorLevel = 900;
-                Variables.BeamHeight = 30;
-                Variables.BatteryHeight = 40;
-
-                Variables.AsteroidHeight = 50;
-                Variables.AsteroidWidth = 60;
-                Variables.CovidInitX = 150;
-                Variables.CovidInitY = -2250;
-                Variables.UKCovidInitX = 250;
-                Variables.UKCovidInitY = 100;
-                Variables.UKCovidHeight = 50;
-                Variables.UKCovidWidth = 60;
-
-                Variables.GoDown = 70;
-                Variables.GoDown2 = 30;
-                Variables.AmountOfCovidToKill = 552;
-                Variables.Chance = 1;
-                Variables.Delay = 10;
-                Variables.PlayerWidth = 30;
-                Variables.PlayerHeight = 50;
-                Variables.CovidRow = 50;
-                Variables.CovidColumn = 10;
-                Variables.UKCovidRow = 5;
-                Variables.UKCovidColumn = 10;
-                Variables.BossRow = 1;
-                Variables.BossColumn = 2;
-                Variables.chosen = true;
-            } else {
-                JOptionPane.showMessageDialog(null, "Please enter a correct difficulty");
+            switch (Choice) {
+                case "Easy", "easy" -> {
+                    Variables.BoardHeight = 1000;
+                    Variables.BoardWidth = 1000;
+                    Variables.BorderLeft = 5;
+                    Variables.BorderRight = 30;
+                    Variables.FloorLevel = 1000;
+                    Variables.BeamHeight = 30;
+                    Variables.BatteryHeight = 40;
+                    Variables.AsteroidHeight = 51;
+                    Variables.AsteroidWidth = 64;
+                    Variables.CovidInitX = 150;
+                    Variables.CovidInitY = 60;
+                    Variables.UKCovidInitX = 150;
+                    Variables.UKCovidInitY = 5;
+                    Variables.UKCovidHeight = 50;
+                    Variables.UKCovidWidth = 40;
+                    Variables.GoDown = 20;
+                    Variables.GoDown2 = 30;
+                    Variables.AmountOfCovidToKill = 40;
+                    Variables.Chance = 1;
+                    Variables.Delay = 10;
+                    Variables.PlayerWidth = 50;
+                    Variables.PlayerHeight = 80;
+                    Variables.CovidRow = 3;
+                    Variables.CovidColumn = 10;
+                    Variables.UKCovidRow = 2;
+                    Variables.UKCovidColumn = 5;
+                    Variables.chosen = true;
+                }
+                case "Hard", "hard" -> {
+                    Variables.BoardHeight = 1000;
+                    Variables.BoardWidth = 1000;
+                    Variables.BorderLeft = 5;
+                    Variables.BorderRight = 30;
+                    Variables.FloorLevel = 1000;
+                    Variables.BeamHeight = 30;
+                    Variables.BatteryHeight = 40;
+                    Variables.AsteroidHeight = 50;
+                    Variables.AsteroidWidth = 60;
+                    Variables.CovidInitX = 150;
+                    Variables.CovidInitY = 60;
+                    Variables.UKCovidInitX = 150;
+                    Variables.UKCovidInitY = 5;
+                    Variables.UKCovidHeight = 50;
+                    Variables.UKCovidWidth = 60;
+                    Variables.GoDown = 50;
+                    Variables.GoDown2 = 30;
+                    Variables.AmountOfCovidToKill = 70;
+                    Variables.Chance = 1;
+                    Variables.Delay = 10;
+                    Variables.PlayerWidth = 30;
+                    Variables.PlayerHeight = 50;
+                    Variables.CovidRow = 5;
+                    Variables.CovidColumn = 10;
+                    Variables.UKCovidRow = 2;
+                    Variables.UKCovidColumn = 10;
+                    Variables.chosen = true;
+                }
+                case "Expert", "expert" -> {
+                    Variables.BoardHeight = 1000;
+                    Variables.BoardWidth = 1000;
+                    Variables.BorderLeft = 5;
+                    Variables.BorderRight = 30;
+                    Variables.FloorLevel = 1000;
+                    Variables.BeamHeight = 30;
+                    Variables.BatteryHeight = 40;
+                    Variables.AsteroidHeight = 51;
+                    Variables.AsteroidWidth = 64;
+                    Variables.CovidInitX = 150;
+                    Variables.CovidInitY = 60;
+                    Variables.UKCovidInitX = 150;
+                    Variables.UKCovidInitY = 5;
+                    Variables.UKCovidHeight = 50;
+                    Variables.UKCovidWidth = 40;
+                    Variables.GoDown = 80;
+                    Variables.GoDown2 = 30;
+                    Variables.AmountOfCovidToKill = 101;
+                    Variables.Chance = 1;
+                    Variables.Delay = 10;
+                    Variables.PlayerWidth = 50;
+                    Variables.PlayerHeight = 80;
+                    Variables.CovidRow = 8;
+                    Variables.CovidColumn = 10;
+                    Variables.UKCovidRow = 2;
+                    Variables.UKCovidColumn = 10;
+                    Variables.BossRow = 1;
+                    Variables.BossColumn = 1;
+                    Variables.chosen = true;
+                }
+                case "Insane", "insane" -> {
+                    Variables.BoardHeight = 1000;
+                    Variables.BoardWidth = 1000;
+                    Variables.BorderLeft = 5;
+                    Variables.BorderRight = 30;
+                    Variables.FloorLevel = 1000;
+                    Variables.BeamHeight = 30;
+                    Variables.BatteryHeight = 40;
+                    Variables.AsteroidHeight = 51;
+                    Variables.AsteroidWidth = 64;
+                    Variables.CovidInitX = 150;
+                    Variables.CovidInitY = 60;
+                    Variables.UKCovidInitX = 150;
+                    Variables.UKCovidInitY = 5;
+                    Variables.UKCovidHeight = 50;
+                    Variables.UKCovidWidth = 40;
+                    Variables.GoDown = 80;
+                    Variables.GoDown2 = 30;
+                    Variables.AmountOfCovidToKill = 131;
+                    Variables.Chance = 1;
+                    Variables.Delay = 10;
+                    Variables.PlayerWidth = 50;
+                    Variables.PlayerHeight = 80;
+                    Variables.CovidRow = 8;
+                    Variables.CovidColumn = 10;
+                    Variables.UKCovidRow = 5;
+                    Variables.UKCovidColumn = 10;
+                    Variables.BossRow = 1;
+                    Variables.BossColumn = 1;
+                    Variables.chosen = true;
+                }
+                case "Endless", "endless" -> {
+                    Variables.BoardHeight = 1000;
+                    Variables.BoardWidth = 1000;
+                    Variables.BorderLeft = 5;
+                    Variables.BorderRight = 30;
+                    Variables.FloorLevel = 1000;
+                    Variables.BeamHeight = 30;
+                    Variables.BatteryHeight = 40;
+                    Variables.AsteroidHeight = 50;
+                    Variables.AsteroidWidth = 60;
+                    Variables.CovidInitX = 150;
+                    Variables.CovidInitY = -2250;
+                    Variables.UKCovidInitX = 250;
+                    Variables.UKCovidInitY = 100;
+                    Variables.UKCovidHeight = 50;
+                    Variables.UKCovidWidth = 60;
+                    Variables.GoDown = 70;
+                    Variables.GoDown2 = 30;
+                    Variables.AmountOfCovidToKill = 552;
+                    Variables.Chance = 1;
+                    Variables.Delay = 10;
+                    Variables.PlayerWidth = 30;
+                    Variables.PlayerHeight = 50;
+                    Variables.CovidRow = 50;
+                    Variables.CovidColumn = 10;
+                    Variables.UKCovidRow = 5;
+                    Variables.UKCovidColumn = 10;
+                    Variables.BossRow = 1;
+                    Variables.BossColumn = 2;
+                    Variables.chosen = true;
+                }
+                default -> JOptionPane.showMessageDialog(null, "Please enter a correct difficulty");
             }
         }
     }
