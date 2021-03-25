@@ -20,8 +20,10 @@ import java.util.stream.Collectors;
   https://www.youtube.com/watch?v=0szmaHH1hno&t=439s - For Art style
   https://stackoverflow.com/questions/2416935/how-to-play-wav-files-with-java  - For playing Music
 
-  The images for the Covid enemiwdsases, germs and player were created by myself. The background image and mask images I obtained from google - they are copyright free
+  The images for the Asteroid, Alien and Boss enemies were taken from copyright free websites on google. The background image and mask images I obtained from google - they are copyright free
   The background music I obtained from - https://www.youtube.com/watch?v=5Eys2CYYU0w - the uploader allows downloads and use as long as it is credited
+
+    The base structure of this code was taken from my Application Programming assignment from the winter term. I had emailed Michael Sanderson and he said it was okay to use the basis of the code to build on and change into a space invader game.
 
 */
 
@@ -30,6 +32,8 @@ public class CE203_BS19624_Ass2 extends JFrame {
     public static boolean hardcheck = false;
     public static boolean expertcheck = false;
     public static boolean endlesscheck = false;
+    public static boolean insanecheck = false;
+    private int deaths = 0;
 
     public static Variables var = new Variables();
 
@@ -44,7 +48,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
     private void BoardCreation() {
         add(new GameLogic()); //adds the map to the screen
 
-        setTitle("Covid Invasion - Ben Sadler BS19624");
+        setTitle("Alien Invasion - Ben Sadler BS19624");
         setSize(Variables.BoardWidth, Variables.BoardHeight); //sts the size of the map to the boardwidth and boardheight variable in the variables class
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -89,8 +93,8 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
     class Asteroid extends Sprite { //This creates the Covid Enemy
 
-        private Germ germ;
-        private Mask mask;
+        private Beam beam;
+        private Battery battery;
         private int width;
         private int height;
 
@@ -103,8 +107,8 @@ public class CE203_BS19624_Ass2 extends JFrame {
             this.x = x;
             this.y = y;
 
-            germ = new Germ(x, y); //germ class
-            mask = new Mask(x, y); //mask class
+            beam = new Beam(x, y); //germ class
+            battery = new Battery(x, y); //mask class
 
             var CovidImg = "src/Images/Asteroid.png"; //gets the covid4 png for the enemy image
             var ii = new ImageIcon(CovidImg);
@@ -124,26 +128,26 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
         }
 
-        public Germ getGerm() {
-            return germ;
+        public Beam getBeam() {
+            return beam;
         }
 
-        public class Germ extends Sprite { //creates the Germ projectile. This spawns from the UKCovid and Covid enemies
+        public class Beam extends Sprite { //creates the Germ projectile. This spawns from the UKCovid and Covid enemies
 
             private boolean destroyed;
 
-            public Germ(int x, int y) {
-                initGerm(x, y); //initalise the germ with the covid x and y coordinates
+            public Beam(int x, int y) {
+                initBattery(x, y); //initalise the germ with the covid x and y coordinates
             }
 
-            private void initGerm(int x, int y) {
+            private void initBattery(int x, int y) {
                 setDestroyed(true);
 
                 this.x = x;
                 this.y = y;
 
-                var germImg = "src/Images/Laser.png";
-                var ii = new ImageIcon(germImg);
+                var beamImg = "src/Images/Laser.png";
+                var ii = new ImageIcon(beamImg);
                 setImage(ii.getImage());
             }
 
@@ -156,14 +160,21 @@ public class CE203_BS19624_Ass2 extends JFrame {
             }
         }
 
-        public Mask getMask() {
-            return mask;
+        public Battery getBattery() {
+            return battery;
         }
 
-        class Mask extends Sprite {
+        public int getHeight(){
+            return height;
+        }
+        public int getWidth(){
+            return width;
+        }
+
+        class Battery extends Sprite {
             private boolean destroyed;
 
-            public Mask(int x, int y) {
+            public Battery(int x, int y) {
                 initMask(x, y); // initliase the mask with the covid x and y coordinates
             }
 
@@ -172,7 +183,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 this.x = x;
                 this.y = y;
 
-                var maskImg = "src/Images/Battery.png";
+                var maskImg = "src/Images/Cell.png";
                 var ii = new ImageIcon(maskImg);
                 setImage(ii.getImage());
             }
@@ -256,7 +267,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
         private java.util.List<Boss> bosses; //the list of uk covid enemies
         private java.util.List<Dispense>dispenses;
         java.util.List<Shape> dispenseList = new ArrayList<>();
-        java.util.List<Shape> shapeList = new ArrayList<Shape>();
+        java.util.List<Rectangle> shapeList = new ArrayList<>();
         private Player player;
         private Dispense dispense;
         long PausedTotal;
@@ -268,7 +279,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
         private int direction = -4; //the initial direction of the covid enemies
         private int direction2 = 2;
         private int direction3 = 3;
-        private int deaths = 0;
+
         int Life = 4; //the amount of life the player has depending on how many masks they have picked up (Max will be 3)
         int Projectiles = 1;
         BufferedImage img;
@@ -306,6 +317,16 @@ public class CE203_BS19624_Ass2 extends JFrame {
             remove(ex);
             Variables var = new Variables();
             var.Choice = "expert";
+            var.Choices();
+            ex = new CE203_BS19624_Ass2();
+            ex.setVisible(true);
+            repaint();
+        }
+        private void InsaneLevel() {
+            ex.dispose();
+            remove(ex);
+            Variables var = new Variables();
+            var.Choice = "insane";
             var.Choices();
             ex = new CE203_BS19624_Ass2();
             ex.setVisible(true);
@@ -372,6 +393,12 @@ public class CE203_BS19624_Ass2 extends JFrame {
                             Variables.UKCovidInitY + 50 * i);
                     bosses.add(BossActor);
                 }
+            }
+            for(Asteroid asteroid : asteroids){
+                shapeList.add(new Rectangle(asteroid.getX(),asteroid.getY(),asteroid.getHeight(),asteroid.getWidth()));
+            }
+            for(Alien alien:aliens){
+                shapeList.add(new Rectangle(alien.getX(),alien.getY(),alien.getHeight(),alien.getWidth()));
             }
 
             player = new Player();
@@ -444,11 +471,11 @@ public class CE203_BS19624_Ass2 extends JFrame {
             }
         }
 
-        private void drawGerms(Graphics g) { //this body of code draws the germs that have a random chance of spawning from the enemies
+        private void drawBeams(Graphics g) { //this body of code draws the germs that have a random chance of spawning from the enemies
 
             for (Asteroid a : asteroids) {
 
-                Asteroid.Germ b = a.getGerm();
+                Asteroid.Beam b = a.getBeam();
 
                 if (!b.isDestroyed()) { //only if the germ is not destroyed
 
@@ -458,7 +485,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
             for (Alien a : aliens) {
 
-                Alien.Germ b = a.getGerm();
+                Alien.Beam b = a.getBeam();
 
                 if (!b.isDestroyed()) {
 
@@ -467,7 +494,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
             }
             for (Boss a : bosses) {
 
-                Boss.Germ b = a.getGerm();
+                Boss.Beam b = a.getBeam();
 
                 if (!b.isDestroyed()) {
 
@@ -477,10 +504,10 @@ public class CE203_BS19624_Ass2 extends JFrame {
         }
 
 
-        private void drawMask(Graphics g) { //this body of code draws the masks that have a random chance of spawning from the enemies
+        private void drawBattery(Graphics g) { //this body of code draws the masks that have a random chance of spawning from the enemies
             for (Asteroid a : asteroids) {
 
-                Asteroid.Mask b = a.getMask();
+                Asteroid.Battery b = a.getBattery();
 
                 if (!b.isDestroyed2()) {
 
@@ -542,8 +569,8 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 drawCovids(g);
                 drawPlayer(g);
                 drawShot(g);  //calls all the drawing methods
-                drawGerms(g);
-                drawMask(g);
+                drawBeams(g);
+                drawBattery(g);
                 DrawPaused(g);
 
 
@@ -737,20 +764,40 @@ public class CE203_BS19624_Ass2 extends JFrame {
             }
         }
 
+
+
+        class PlayAsteroidSound extends Thread{
+            public void run(){
+                Music Music = new Music(); //call the music method
+                try {
+                    Music.playSound("src/Hit.wav"); // This plays the shooting sound for picking up the masks
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                    }
+
+
+        }
+
+
+
+
+
         AsteroidMoveDown threadA = new AsteroidMoveDown();
         UkCovidMoveDown threadB = new UkCovidMoveDown();
         DispenseMoveUp threadD = new DispenseMoveUp();
         BossMoveDown threadC = new BossMoveDown();
+        Rectangle p = new Rectangle(0,0,Variables.PlayerWidth,Variables.PlayerHeight);
 
 
         private void update() { //this body of code runs throughout the game
 
 
-
             int playerX1 = player.getX();
             int playerY1 = player.getY();
-            Rectangle p = new Rectangle(playerX1 - 25, playerY1 + 10, Variables.PlayerWidth, Variables.PlayerHeight);
+            p.setLocation(playerX1 - 25, playerY1 + 10);
             if (deaths == Variables.AmountOfCovidToKill) {
+                deaths=0;
 
                 if (CE203_BS19624_Ass2.Variables.Choice.equals("hard") || CE203_BS19624_Ass2.Variables.Choice.equals("Hard")) {
                     hardcheck = true;
@@ -758,9 +805,14 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 if (CE203_BS19624_Ass2.Variables.Choice.equals("expert") || CE203_BS19624_Ass2.Variables.Choice.equals("Expert")) {
                     expertcheck = true;
                 }
+                if (CE203_BS19624_Ass2.Variables.Choice.equals("insane") || CE203_BS19624_Ass2.Variables.Choice.equals("Insane")) {
+                    insanecheck = true;
+                }
+
                 if (CE203_BS19624_Ass2.Variables.Choice.equals("endless") || CE203_BS19624_Ass2.Variables.Choice.equals("Endless")) {
                     endlesscheck = true;
                 }
+
 
                 inGame = false;
                 timer.stop();
@@ -768,40 +820,31 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 JOptionPane.showMessageDialog(null, "It took you " + TimeElapsed + " Seconds to destroy the Covid Invasion!"); ///This body of cody is ran when the player kills the covid invasion and wins the game, It will output the time it took for them to win and write it to the text file for the correct difficulty
                 HighScore2();
 
-        }
-
-
+            }
 
 
             // player
             player.act();
 
             // shot
-
+            int i = 0;
             // if (dispense.isVisible()) { //checks whether a shot is already on the screen
 
             boolean takelife = false;
-            for(Dispense dispense : dispenses) {
+            for (Dispense dispense : dispenses) {
                 Rectangle d = new Rectangle(dispense.getX() - 30, dispense.getY(), dispense.getWidth() + 20, dispense.getHeight());
                 dispenseList.add(d);
                 int shotX = dispense.getX();
                 int shotY = dispense.getY();
 
 
-
-
-
-
                 for (Asteroid AsteroidActors : asteroids) {
 
-                    Rectangle a = new Rectangle(AsteroidActors.getX(), AsteroidActors.getY(), 20, Variables.AsteroidHeight);
+                    //Rectangle a = new Rectangle(AsteroidActors.getX(), AsteroidActors.getY(), 20, Variables.AsteroidHeight);
+                    Rectangle a = shapeList.get(i);
+                    a.setLocation(AsteroidActors.getX(), AsteroidActors.getY());
 
-
-                    int AsteroidActorX = AsteroidActors.getX();
-                    int AsteroidActorY = AsteroidActors.getY();
-
-
-                    if (AsteroidActors.isVisible() && dispense.isVisible()) { //this checks wether the the dispense projectile and the covid actor have collided with eachother. If they have, then set the covid actor to die and destroy the dispense projectile
+                    if (AsteroidActors.isVisible() && dispense.isVisible()) { //this checks whether the the dispense projectile and the covid actor have collided with eachother. If they have, then set the covid actor to die and destroy the dispense projectile
                         if (d.intersects(a)) {
 
                             var ii = new ImageIcon(explImg); //shows an explosion image when the covid actor gets hit and dies
@@ -817,54 +860,56 @@ public class CE203_BS19624_Ass2 extends JFrame {
                             AsteroidActors.setImage(ii.getImage());
                             AsteroidActors.setDying(true);
                             dispense.die();
-                            deaths++; // increases death counter which is checked again
+                           //deaths++; // increases death counter which is checked again
                             // nst the CovidAmountToKill variable and when they are the same the game is won.
                             //remove dispense projectile
-
-
                         }
-
                     }
                     if (player.isVisible() && AsteroidActors.isVisible() && takelife == false) {
 
                         // this will trigger a life loss if the player comes in contact with the asteroid
                         if (p.intersects(a) && AsteroidActors.isVisible()) {
                             AsteroidActors.setDying(true);
-                            deaths++;//checks if the asteroid coordinates are within the player hitbox/collision coordinates
+                         //  deaths++;//checks if the asteroid coordinates are within the player hitbox/collision coordinates
                             if (Life <= 0) { //if the player life is less than 0 then the player dies and looses the game
                                 System.out.println(Life);
                                 player.setDying(true);
 
                             } else { //the player looses a life if they have more than 1 life
                                 Life = Life - 1;
-                                takelife=true;
+                                takelife = true;
 
 
                             }
                         }
                     }
+
+
                 }
 
                 for (Alien AlienActors : aliens) { //same as above but for the ukcovid enemies
 
-                    int AlienActorsX = AlienActors.getX();
-                    int AlienActorsY = AlienActors.getY();
-                    Rectangle a2 = new Rectangle(AlienActors.getX(), AlienActors.getY(), 40, Variables.AsteroidHeight);
-                    shapeList.add(a2);
+                    //Rectangle a2 = new Rectangle(AlienActors.getX(), AlienActors.getY(), 40, Variables.AsteroidHeight);//
+                    // shapeList.add(a2);
+
+                    Rectangle a = shapeList.get(i);
+                    a.setLocation(AlienActors.getX(), AlienActors.getY());
 
                     if (AlienActors.isVisible() && dispense.isVisible()) {
-                        if (d.intersects(a2)) {
+                        if (d.intersects(a)) {
 
                             var ii = new ImageIcon(explImg);
                             AlienActors.setImage(ii.getImage());
                             AlienActors.setDying(true);
                             dispense.die();
-                            deaths++;
+                            //deaths++;
                             System.out.println(deaths);
 
                         }
                     }
                 }
+
+
 
                 for (Boss BossActors : bosses) { //same as above but for the ukcovid enemies
 
@@ -881,7 +926,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
                                 var ii = new ImageIcon(explImg);
                                 BossActors.setImage(ii.getImage());
                                 BossActors.setDying(true);
-                                deaths++;
+                               // deaths++;
                             } else {
                                 BossActors.setHealth(BossActors.getHealth() - 1);
 
@@ -890,7 +935,9 @@ public class CE203_BS19624_Ass2 extends JFrame {
                         }
                     }
                 }
+                i++;
             }
+
 
 
 
@@ -903,29 +950,29 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
             threadD.run();
 
-            // Germ generation
+            // Beam generation
             var generator = new Random(); //creates a random number generator for determining when to spawn a germ
 
             for (Asteroid asteroid : asteroids) {
 
                 if (asteroid.getY() >= 0) {
                     int shot = generator.nextInt(6000);
-                    Asteroid.Germ germ = asteroid.getGerm();
-                    Rectangle g = new Rectangle(germ.getX(), germ.getY(), 5, 20);
+                    Asteroid.Beam beam = asteroid.getBeam();
+                    Rectangle g = new Rectangle(beam.getX(), beam.getY(), 5, 20);
 
 
-                    if (shot == Variables.Chance && asteroid.isVisible() && germ.isDestroyed()) { //if the shot generator is the same as the chance variable, then spawn a germ
+                    if (shot == Variables.Chance && asteroid.isVisible() && beam.isDestroyed()) { //if the shot generator is the same as the chance variable, then spawn a germ
 
-                        germ.setDestroyed(false);
-                        germ.setX(asteroid.getX()); //spawns where the covid enemy is
-                        germ.setY(asteroid.getY());
+                        beam.setDestroyed(false);
+                        beam.setX(asteroid.getX()); //spawns where the covid enemy is
+                        beam.setY(asteroid.getY());
                     }
 
 
-                    if (player.isVisible() && !germ.isDestroyed()) {
+                    if (player.isVisible() && !beam.isDestroyed()) {
 
                         if (g.intersects(p)) { //checks if the germ coordinates are within the player hitbox/collision coordinates
-                            germ.setDestroyed(true);
+                            beam.setDestroyed(true);
 
 
                             if (Life <= 0) { //if the player life is less than 0 then the player dies and looses the game
@@ -934,19 +981,19 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
                             } else { //the player looses a life if they have more than 1 life
                                 Life = Life - 1;
-                                germ.setDestroyed(true);
+                                beam.setDestroyed(true);
                             }
                         }
                     }
 
 
-                    if (!germ.isDestroyed()) {
+                    if (!beam.isDestroyed()) {
 
-                        germ.setY(germ.getY() + 5);
+                        beam.setY(beam.getY() + 5);
 
-                        if (germ.getY() >= Variables.FloorLevel - Variables.GermHeight - 10) { //if the germ  gets to just above the floor level, destroy it
+                        if (beam.getY() >= Variables.FloorLevel - Variables.BeamHeight - 10) { //if the germ  gets to just above the floor level, destroy it
 
-                            germ.setDestroyed(true);
+                            beam.setDestroyed(true);
                         }
                     }
                 }
@@ -956,30 +1003,25 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 if (ukcovid.getY() >= 0) {
 
                 int shot2 = generator.nextInt(2000);
-                Alien.Germ germ2 = ukcovid.getGerm();
+                Alien.Beam beam2 = ukcovid.getBeam();
 
                 //Rectangle a = new Rectangle(AsteroidActors.getX(),AsteroidActors.getY(), Variables.CovidWidth,Variables.CovidHeight);
                 //shapeList.add(a);
                 //Rectangle p = new Rectangle(playerX1,playerY1, Variables.PlayerWidth,Variables.PlayerHeight);
-                Rectangle g = new Rectangle(germ2.getX(), germ2.getY(), 5, 20);
+                Rectangle g = new Rectangle(beam2.getX(), beam2.getY(), 5, 20);
 
 
-                    if (shot2 == Variables.Chance && ukcovid.isVisible() && germ2.isDestroyed()) {
+                    if (shot2 == Variables.Chance && ukcovid.isVisible() && beam2.isDestroyed()) {
 
-                        germ2.setDestroyed(false);
-                        germ2.setX(ukcovid.getX());
-                        germ2.setY(ukcovid.getY());
+                        beam2.setDestroyed(false);
+                        beam2.setX(ukcovid.getX());
+                        beam2.setY(ukcovid.getY());
                     }
 
-                    int germX = germ2.getX();
-                    int germY = germ2.getY();
-                    int playerX = player.getX();
-                    int playerY = player.getY();
-
-                    if (player.isVisible() && !germ2.isDestroyed()) {
+                    if (player.isVisible() && !beam2.isDestroyed()) {
 
                         if (g.intersects(p)) {
-                            germ2.setDestroyed(true);
+                            beam2.setDestroyed(true);
 
                             // var ii = new ImageIcon(explImg);
                             //player.setImage(ii.getImage());
@@ -994,13 +1036,13 @@ public class CE203_BS19624_Ass2 extends JFrame {
                     }
 
 
-                    if (!germ2.isDestroyed()) {
+                    if (!beam2.isDestroyed()) {
 
-                        germ2.setY(germ2.getY() + 1);
+                        beam2.setY(beam2.getY() + 1);
 
-                        if (germ2.getY() >= Variables.FloorLevel - Variables.GermHeight) {
+                        if (beam2.getY() >= Variables.FloorLevel - Variables.BeamHeight) {
 
-                            germ2.setDestroyed(true);
+                            beam2.setDestroyed(true);
                         }
                     }
                 }
@@ -1011,30 +1053,27 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 int shot3 = generator.nextInt(100);
 
 
-                Boss.Germ germ2 = boss.getGerm();
+                Boss.Beam beam2 = boss.getBeam();
 
                 //Rectangle a = new Rectangle(AsteroidActors.getX(),AsteroidActors.getY(), Variables.CovidWidth,Variables.CovidHeight);
                 //shapeList.add(a);
                 //Rectangle p = new Rectangle(playerX1,playerY1, Variables.PlayerWidth,Variables.PlayerHeight);
-                Rectangle g = new Rectangle(germ2.getX(), germ2.getY(), 5, 20);
+                Rectangle g = new Rectangle(beam2.getX(), beam2.getY(), 5, 20);
 
 
-                if (shot3 == Variables.Chance && boss.isVisible() && germ2.isDestroyed()) {
+                if (shot3 == Variables.Chance && boss.isVisible() && beam2.isDestroyed()) {
 
-                    germ2.setDestroyed(false);
-                    germ2.setX(boss.getX());
-                    germ2.setY(boss.getY());
+                    beam2.setDestroyed(false);
+                    beam2.setX(boss.getX());
+                    beam2.setY(boss.getY());
                 }
 
-                int germX = germ2.getX();
-                int germY = germ2.getY();
-                int playerX = player.getX();
-                int playerY = player.getY();
 
-                if (player.isVisible() && !germ2.isDestroyed()) {
+
+                if (player.isVisible() && !beam2.isDestroyed()) {
 
                     if (g.intersects(p)) {
-                        germ2.setDestroyed(true);
+                        beam2.setDestroyed(true);
 
                         // var ii = new ImageIcon(explImg);
                         //player.setImage(ii.getImage());
@@ -1049,13 +1088,13 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 }
 
 
-                if (!germ2.isDestroyed()) {
+                if (!beam2.isDestroyed()) {
 
-                    germ2.setY(germ2.getY() + 10);
+                    beam2.setY(beam2.getY() + 10);
 
-                    if (germ2.getY() >= Variables.FloorLevel - Variables.GermHeight) {
+                    if (beam2.getY() >= Variables.FloorLevel - Variables.BeamHeight) {
 
-                        germ2.setDestroyed(true);
+                        beam2.setDestroyed(true);
                     }
                 }
             }
@@ -1065,22 +1104,22 @@ public class CE203_BS19624_Ass2 extends JFrame {
             for (Asteroid asteroid : asteroids) {
                 if (asteroid.getY() >= 0) {
                     int shoot = generator2.nextInt(10000); //determines the chance of a mask spawning
-                    Asteroid.Mask BatteryPack = asteroid.getMask();
+                    Asteroid.Battery BatteryPack = asteroid.getBattery();
 
                     if (shoot == Variables.Chance && asteroid.isVisible() && BatteryPack.isDestroyed2()) {
                         BatteryPack.setDestroyed2(false);
                         BatteryPack.setX(asteroid.getX());
                         BatteryPack.setY(asteroid.getY());
                     }
-                    int maskX = BatteryPack.getX();
-                    int maskY = BatteryPack.getY();
+                    int batteryX = BatteryPack.getX();
+                    int batteryY = BatteryPack.getY();
                     int playerX = player.getX();
                     int playerY = player.getY();
 
                     if (player.isVisible() && !BatteryPack.isDestroyed2()) {
-                        if (maskX >= (playerX) && maskX <= (playerX + Variables.PlayerWidth + 20)
-                                && maskY >= (playerY)
-                                && maskY <= (playerY + Variables.PlayerHeight + 20)) {
+                        if (batteryX >= (playerX) && batteryX <= (playerX + Variables.PlayerWidth + 20)
+                                && batteryY >= (playerY)
+                                && batteryY <= (playerY + Variables.PlayerHeight + 20)) {
                             BatteryPack.setDestroyed2(true);
                             Music Music = new Music(); //call the music method
                             if (Projectiles <= 3) {
@@ -1116,7 +1155,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
                         BatteryPack.setY(BatteryPack.getY() + 1);
 
-                        if (BatteryPack.getY() >= Variables.FloorLevel - Variables.MaskHeight) {
+                        if (BatteryPack.getY() >= Variables.FloorLevel - Variables.BatteryHeight) {
 
                             BatteryPack.setDestroyed2(true);
                         }
@@ -1141,6 +1180,10 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
             if (Variables.Choice.equals("Expert") || Variables.Choice.equals("expert")) {
                 String FilePath = "src/HighScoreExpert.txt";
+                WriteFile(FilePath, TimeElapsed);
+            }
+            if (Variables.Choice.equals("Insane") || Variables.Choice.equals("insane")) {
+                String FilePath = "src/HighScoreInsane.txt";
                 WriteFile(FilePath, TimeElapsed);
             }
             if (Variables.Choice.equals("Endless") || Variables.Choice.equals("endless")) {
@@ -1208,6 +1251,23 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 reader.close();
                 JOptionPane.showMessageDialog(null, input, "High Scores Expert", JOptionPane.INFORMATION_MESSAGE);
                 expertcheck = false;
+                InsaneLevel();
+
+
+            }
+            if (Variables.Choice.equals("Insane") || Variables.Choice.equals("insane") && insanecheck) {
+                BufferedReader reader = new BufferedReader(new FileReader("src/HighScoreInsane.txt"));
+
+
+                String line = null;
+                while ((line = reader.readLine()) != null & i2 < 5) {
+                    //Add the line and then "\n" indicating a new line
+                    input += line + " Seconds \n";
+                    i2 += 1;
+                }
+                reader.close();
+                JOptionPane.showMessageDialog(null, input, "High Scores Insane", JOptionPane.INFORMATION_MESSAGE);
+                insanecheck = false;
                 EndlessLevel();
 
 
@@ -1676,6 +1736,8 @@ public class CE203_BS19624_Ass2 extends JFrame {
         public void setDying(boolean dying) {
 
             this.dying = dying; //sets dying
+            deaths++;
+
         }
 
         public boolean isDying() {
@@ -1687,8 +1749,10 @@ public class CE203_BS19624_Ass2 extends JFrame {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     class Alien extends Sprite { // the class for the UkCovid, this is the same as the Covid class but slightly altered for UkCovid
-        private Alien.Germ germ;
-        private Alien.Mask mask;
+        private Beam beam;
+        private Battery battery;
+        private int width;
+        private int height;
 
         public Alien(int x, int y) {
             initUkCovid(x, y);
@@ -1699,15 +1763,26 @@ public class CE203_BS19624_Ass2 extends JFrame {
             this.x = x;
             this.y = y;
 
-            germ = new Alien.Germ(x, y);
-            mask = new Alien.Mask(x, y);
+            beam = new Beam(x, y);
+            battery = new Battery(x, y);
 
             var CovidImg = "src/Images/Alien.png";
             //image obtained from : https://www.klipartz.com/en/sticker-png-fhnku
             var ii = new ImageIcon(CovidImg);
 
+            width = ii.getImage().getWidth(null);
+            System.out.println(width);
+            height = ii.getImage().getHeight(null);
+            System.out.println(height);
+
 
             setImage(ii.getImage());
+        }
+        public int getHeight(){
+            return height;
+        }
+        public int getWidth(){
+            return width;
         }
 
         public void UKAct(int direction) {
@@ -1716,26 +1791,26 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
         }
 
-        public Alien.Germ getGerm() {
-            return germ;
+        public Beam getBeam() {
+            return beam;
         }
 
-        public class Germ extends Sprite {
+        public class Beam extends Sprite {
 
             private boolean destroyed;
 
-            public Germ(int x, int y) {
-                initGerm(x, y);
+            public Beam(int x, int y) {
+                initBeam(x, y);
             }
 
-            private void initGerm(int x, int y) {
+            private void initBeam(int x, int y) {
                 setDestroyed(true);
 
                 this.x = x;
                 this.y = y;
 
-                var germImg = "src/Images/Laser.png";
-                var ii = new ImageIcon(germImg);
+                var beamimg = "src/Images/Laser.png";
+                var ii = new ImageIcon(beamimg);
                 setImage(ii.getImage());
             }
 
@@ -1748,24 +1823,24 @@ public class CE203_BS19624_Ass2 extends JFrame {
             }
         }
 
-        public Alien.Mask getMask() {
-            return mask;
+        public Battery getBattery() {
+            return battery;
         }
 
-        public class Mask extends Sprite {
+        public class Battery extends Sprite {
             private boolean destroyed;
 
-            public Mask(int x, int y) {
-                initMask(x, y);
+            public Battery(int x, int y) {
+                initBattery(x, y);
             }
 
-            private void initMask(int x, int y) {
+            private void initBattery(int x, int y) {
                 setDestroyed2(true);
                 this.x = x;
                 this.y = y;
 
-                var maskImg = "src/Images/Battery.png";
-                var ii = new ImageIcon(maskImg);
+                var batteryImg = "src/Images/Battery.png";
+                var ii = new ImageIcon(batteryImg);
                 setImage(ii.getImage());
             }
 
@@ -1782,8 +1857,8 @@ public class CE203_BS19624_Ass2 extends JFrame {
     }
 
     class Boss extends Sprite { // the class for the UkCovid, this is the same as the Covid class but slightly altered for UkCovid
-        private Boss.Germ germ;
-        private Boss.Mask mask;
+        private Beam beam;
+        private Battery battery;
         public int health = 50;
 
         public Boss(int x, int y) {
@@ -1795,8 +1870,8 @@ public class CE203_BS19624_Ass2 extends JFrame {
             this.x = x;
             this.y = y;
 
-            germ = new Boss.Germ(x, y);
-            mask = new Boss.Mask(x, y);
+            beam = new Beam(x, y);
+            battery = new Battery(x, y);
 
             var CovidImg = "src/Images/Boss.png";
             //image obtained from : https://www.klipartz.com/en/sticker-png-fhnku
@@ -1820,26 +1895,26 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
         }
 
-        public Boss.Germ getGerm() {
-            return germ;
+        public Beam getBeam() {
+            return beam;
         }
 
-        public class Germ extends Sprite {
+        public class Beam extends Sprite {
 
             private boolean destroyed;
 
-            public Germ(int x, int y) {
-                initGerm(x, y);
+            public Beam(int x, int y) {
+                initBeam(x, y);
             }
 
-            private void initGerm(int x, int y) {
+            private void initBeam(int x, int y) {
                 setDestroyed(true);
 
                 this.x = x;
                 this.y = y;
 
-                var germImg = "src/Images/Laser.png";
-                var ii = new ImageIcon(germImg);
+                var beamImg = "src/Images/Laser.png";
+                var ii = new ImageIcon(beamImg);
                 setImage(ii.getImage());
             }
 
@@ -1852,24 +1927,24 @@ public class CE203_BS19624_Ass2 extends JFrame {
             }
         }
 
-        public Boss.Mask getMask() {
-            return mask;
+        public Battery getBattery() {
+            return battery;
         }
 
-        public class Mask extends Sprite {
+        public class Battery extends Sprite {
             private boolean destroyed;
 
-            public Mask(int x, int y) {
-                initMask(x, y);
+            public Battery(int x, int y) {
+                initBattery(x, y);
             }
 
-            private void initMask(int x, int y) {
+            private void initBattery(int x, int y) {
                 setDestroyed2(true);
                 this.x = x;
                 this.y = y;
 
-                var maskImg = "src/Images/Battery.png";
-                var ii = new ImageIcon(maskImg);
+                var batteryimg = "src/Images/Battery.png";
+                var ii = new ImageIcon(batteryimg);
                 setImage(ii.getImage());
             }
 
@@ -1894,8 +1969,8 @@ public class CE203_BS19624_Ass2 extends JFrame {
         public static int BorderLeft = 5;
         public static int BorderRight = 30;
         public static int FloorLevel = 900; //the floor level which the player plays on and the covid enemies try to invade to
-        public static int GermHeight = 40; // germ height
-        public static int MaskHeight = 20; //mask height
+        public static int BeamHeight = 40; // germ height
+        public static int BatteryHeight = 20; //mask height
 
         public static int AsteroidHeight = 51; //Covid Height and Width determine the hitbox/collision for the covid enemies. This is the same for the UkCovid
         public static int AsteroidWidth = 64;
@@ -1934,8 +2009,8 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 Variables.BorderRight = 30;
 
                 Variables.FloorLevel = 900;
-                Variables.GermHeight = 30;
-                Variables.MaskHeight = 40;
+                Variables.BeamHeight = 30;
+                Variables.BatteryHeight = 40;
                 Variables.AsteroidHeight = 51;
                 Variables.AsteroidWidth = 64;
                 Variables.CovidInitX = 150;
@@ -1964,8 +2039,8 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 Variables.BorderRight = 30;
 
                 Variables.FloorLevel = 900;
-                Variables.GermHeight = 30;
-                Variables.MaskHeight = 40;
+                Variables.BeamHeight = 30;
+                Variables.BatteryHeight = 40;
 
                 Variables.AsteroidHeight = 50;
                 Variables.AsteroidWidth = 60;
@@ -1995,8 +2070,8 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 Variables.BorderRight = 30;
 
                 Variables.FloorLevel = 900;
-                Variables.GermHeight = 30;
-                Variables.MaskHeight = 40;
+                Variables.BeamHeight = 30;
+                Variables.BatteryHeight = 40;
                 Variables.AsteroidHeight = 51;
                 Variables.AsteroidWidth = 64;
                 Variables.CovidInitX = 150;
@@ -2006,7 +2081,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 Variables.UKCovidHeight = 50;
                 Variables.UKCovidWidth = 40;
 
-                Variables.GoDown = 50;
+                Variables.GoDown = 80;
                 Variables.GoDown2 = 30;
                 Variables.AmountOfCovidToKill = 101;
                 Variables.Chance = 1;
@@ -2021,6 +2096,40 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 Variables.BossColumn = 1;
                 Variables.chosen = true;
 
+            }
+            else if (Choice.equals("Insane") || Choice.equals("insane")) {
+                Variables.BoardHeight = 1000;
+                Variables.BoardWidth = 1000;
+                Variables.BorderLeft = 5;
+                Variables.BorderRight = 30;
+
+                Variables.FloorLevel = 900;
+                Variables.BeamHeight = 30;
+                Variables.BatteryHeight = 40;
+                Variables.AsteroidHeight = 51;
+                Variables.AsteroidWidth = 64;
+                Variables.CovidInitX = 150;
+                Variables.CovidInitY = 60;
+                Variables.UKCovidInitX = 150;
+                Variables.UKCovidInitY = 5;
+                Variables.UKCovidHeight = 50;
+                Variables.UKCovidWidth = 40;
+
+                Variables.GoDown = 80;
+                Variables.GoDown2 = 30;
+                Variables.AmountOfCovidToKill = 131;
+                Variables.Chance = 1;
+                Variables.Delay = 10;
+                Variables.PlayerWidth = 50;
+                Variables.PlayerHeight = 80;
+                Variables.CovidRow = 8;
+                Variables.CovidColumn = 10;
+                Variables.UKCovidRow = 5;
+                Variables.UKCovidColumn = 10;
+                Variables.BossRow = 1;
+                Variables.BossColumn = 1;
+                Variables.chosen = true;
+
             } else if (Choice.equals("Endless") || Choice.equals("endless")) {
                 Variables.BoardHeight = 1000;
                 Variables.BoardWidth = 1000;
@@ -2028,8 +2137,8 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 Variables.BorderRight = 30;
 
                 Variables.FloorLevel = 900;
-                Variables.GermHeight = 30;
-                Variables.MaskHeight = 40;
+                Variables.BeamHeight = 30;
+                Variables.BatteryHeight = 40;
 
                 Variables.AsteroidHeight = 50;
                 Variables.AsteroidWidth = 60;
@@ -2042,7 +2151,7 @@ public class CE203_BS19624_Ass2 extends JFrame {
 
                 Variables.GoDown = 70;
                 Variables.GoDown2 = 30;
-                Variables.AmountOfCovidToKill = 700;
+                Variables.AmountOfCovidToKill = 552;
                 Variables.Chance = 1;
                 Variables.Delay = 10;
                 Variables.PlayerWidth = 30;
@@ -2051,6 +2160,8 @@ public class CE203_BS19624_Ass2 extends JFrame {
                 Variables.CovidColumn = 10;
                 Variables.UKCovidRow = 5;
                 Variables.UKCovidColumn = 10;
+                Variables.BossRow = 1;
+                Variables.BossColumn = 2;
                 Variables.chosen = true;
             } else {
                 JOptionPane.showMessageDialog(null, "Please enter a correct difficulty");
