@@ -6,6 +6,13 @@ The game can be run by loading the java files and resource files into IntelliJ a
 
 Screenshots:
 
+Gameplay :
+
+
+https://user-images.githubusercontent.com/56220027/136602166-e8c3d982-5ec8-4a66-abd1-0e9a2d04f4c6.mp4
+
+
+
 Level Easy : 
 
 ![image](https://user-images.githubusercontent.com/56220027/136597607-9833e2b5-b810-44c5-b54b-2f77604c84f6.png)
@@ -13,3 +20,6 @@ Level Easy :
 Level Insane : 
 
 ![image](https://user-images.githubusercontent.com/56220027/136597632-5e240ba8-a323-456b-87ab-c220449d2117.png)
+
+
+
