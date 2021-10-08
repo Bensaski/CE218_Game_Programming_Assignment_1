@@ -4,8 +4,12 @@ The game I have created is similar to the classic Space Invaders. It has been mo
 
 The game can be run by loading the java files and resource files into IntelliJ and running the program through IntelliJ, or by building a JAR file with the CE218_Game_Programming_Assignment.java file and inputting it into a folder with the relevant resource files.
 
+Screenshots:
+
+Level Easy : 
 
 ![image](https://user-images.githubusercontent.com/56220027/136597607-9833e2b5-b810-44c5-b54b-2f77604c84f6.png)
 
+Level Insane : 
 
 ![image](https://user-images.githubusercontent.com/56220027/136597632-5e240ba8-a323-456b-87ab-c220449d2117.png)
